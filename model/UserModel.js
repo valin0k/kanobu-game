@@ -7,7 +7,7 @@ export default class UserModel extends BaseModel {
     await this.root.addAsync(this, {
       ...data,
       createdAt: Date.now(),
-      id
+      // id
     })
     return id
   }

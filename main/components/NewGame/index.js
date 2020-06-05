@@ -1,5 +1,5 @@
 import React from 'react'
-import {observer, useSession, useQueryDoc, $root} from 'startupjs'
+import {observer, useSession, useQueryDoc, $root, emit} from 'startupjs'
 import { ScrollView, Text } from 'react-native'
 import { Button } from '@startupjs/ui'
 import './index.styl'
@@ -9,7 +9,8 @@ export default observer(function NewGame () {
   const [user] = useQueryDoc('users', { sessionUserId: userId })
 
   async function createGame() {
-    await $root.scope('games').add({ professor: user.id })
+    const id = await $root.scope('games').add({ professor: user.id })
+    emit('url', `/game/${id}`)
   }
 
   return pug`
