@@ -1,10 +1,10 @@
 import React from 'react'
 import { observer, useSession, useQueryDoc } from 'startupjs'
-import { ScrollView, Text } from 'react-native'
+import { ScrollView } from 'react-native'
 import { TestComponent } from 'components'
-import { AuthForm } from 'main/components'
+import { AuthForm, NewGame } from 'main/components'
 import './index.styl'
-import { Content } from '@startupjs/ui'
+import { Content, H3 } from '@startupjs/ui'
 
 export default observer(function PHome () {
   const [userId] = useSession('userId')
@@ -14,7 +14,8 @@ export default observer(function PHome () {
     ScrollView.root
       Content
         if user
-          Text tada
+          H3 Hi, #{user.name}
+          NewGame
         else
           AuthForm
   `
