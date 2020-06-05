@@ -13,5 +13,11 @@ export default class UserModel extends BaseModel {
     return id
   }
 
-  // updateS
+  async join({gameId, userId}) {
+    const $game = this.scope(`games.${gameId}`)
+    await this.root.subscribeAsync($game)
+
+    $game.set('companion', userId)
+    return true
+  }
 }

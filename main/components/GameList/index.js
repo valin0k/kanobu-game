@@ -16,6 +16,6 @@ export default observer(function GameList () {
     H4 Games list
     Div.root
       each game in games
-        GameListItem(gameId=game.id)
+        GameListItem(gameId=game.id key=game.id)
   `
 })
