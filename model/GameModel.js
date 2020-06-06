@@ -1,5 +1,8 @@
 import { BaseModel } from 'startupjs/orm'
 
+const SURRENDER = 'surrender'
+
+
 export default class UserModel extends BaseModel {
   async add(data = {}) {
     let id = this.id()
@@ -41,6 +44,15 @@ export default class UserModel extends BaseModel {
       rounds.push(lastRound)
     }
     $game.set('rounds', rounds)
+    return true
+  }
+
+  async surrender({ gameId, userId }) {
+    const $game = this.scope(`games.${gameId}`)
+    await this.root.subscribe($game)
+    $game.set('open', false)
+    $game.set('cause', SURRENDER)
+
     return true
   }
 

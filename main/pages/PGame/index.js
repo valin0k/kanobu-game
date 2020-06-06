@@ -34,18 +34,25 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   }, [])
 
   async function joinGame() {
-    await $root.scope('games').join({ gameId, userId })
+    await $root.scope('games').join({ gameId, userId: user.id })
   }
 
   async function onActionPress(action) {
     await $root.scope('games').selectAction({gameId, isProfessor, action})
   }
 
+  async function onSurrender() {
+    await $root.scope('games').surrender({ gameId, userId: user.id })
+  }
+  
+  async function onNextRound() {
+
+  }
+
   function goBack() {
     emit('url', '/')
   }
-// console.info("__game.rounds__", game.rounds)
-  console.info("__selectedAction__", selectedAction)
+
   return pug`
     Div.root
       Button(onPress=goBack) Go back
@@ -56,7 +63,16 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
           Text.text Select your action
           Div.actions
             each action in ACTIONS
-              Div.action(onPress=() => onActionPress(action.type) key=action.type)
-                Icon(icon=action.icon size=70 color=selectedAction === action.type ? 'tomato' : '#36363c')
+              - const selected = selectedAction === action.type
+              Div.action(
+                onPress=() => !selectedAction && onActionPress(action.type) 
+                key=action.type 
+                disabled=selectedAction
+              )
+                Icon(icon=action.icon size=70 color=selected ? 'tomato' : '#36363c')
+      Div.actions
+        Button(onPress=onSurrender) Surrender
+        if isProfessor
+          Button(onPress=onNextRound) Next round
   `
 })
