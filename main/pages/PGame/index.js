@@ -44,7 +44,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   async function onSurrender() {
     await $root.scope('games').surrender({ gameId, userId: user.id })
   }
-  
+
   async function onNextRound() {
 
   }
