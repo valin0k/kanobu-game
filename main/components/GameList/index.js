@@ -13,7 +13,8 @@ export default observer(function GameList () {
     // professor: { $ne: user.id },
     $or: [
       { opponent: { $exists: false } },
-      { opponent: userId }
+      { opponent: userId },
+      { professor: user.id }
     ]
   })
 

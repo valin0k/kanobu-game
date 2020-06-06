@@ -31,7 +31,7 @@ export default class UserModel extends BaseModel {
     await this.root.subscribe($game)
     const rounds = $game.get('rounds')
 
-    const lastRoundIndex = rounds.length - 1
+    const lastRoundIndex = (rounds.length - 1) < 1 ? 0 : rounds.length - 1
     const beforeLastRound = rounds[lastRoundIndex - 1] || []
     const lastRound = rounds[lastRoundIndex] || []
     lastRound[isProfessor ? 0 : 1] = action
@@ -40,8 +40,9 @@ export default class UserModel extends BaseModel {
     } else {
       rounds.push(lastRound)
     }
-
     $game.set('rounds', rounds)
     return true
   }
+
+
 }

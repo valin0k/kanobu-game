@@ -1,8 +1,7 @@
-import React, { useEffect } from 'react'
-import {$root, observer, useDoc, useQueryDoc, useSession} from 'startupjs'
+import React, { useEffect, useMemo } from 'react'
+import {$root, observer, useDoc, useQueryDoc, useSession, emit} from 'startupjs'
 import { Text, ScrollView } from 'react-native'
-import qs from 'qs'
-import { Content, Div, H3, Icon } from '@startupjs/ui'
+import { Content, Div, H3, Icon, Button } from '@startupjs/ui'
 import { faScroll, faCut, faCube } from '@fortawesome/free-solid-svg-icons'
 import './index.styl'
 
@@ -17,6 +16,14 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   const [user] = useQueryDoc('users', { sessionUserId: userId })
   const [game, $game] = useDoc('games', gameId)
   const isProfessor = user.id === game.professor
+
+  const gameRounds = game.rounds
+
+  const selectedAction = useMemo(() => {
+    const lastRoundIndex = (gameRounds.length - 1) < 1 ? 0 : gameRounds.length - 1
+    const lastRound = gameRounds[lastRoundIndex]
+    return lastRound[isProfessor ? 0 : 1]
+  }, [JSON.stringify(gameRounds)])
 
   useEffect(() => {
     if(!user || !game) return
@@ -34,8 +41,14 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
     await $root.scope('games').selectAction({gameId, isProfessor, action})
   }
 
+  function goBack() {
+    emit('url', '/')
+  }
+// console.info("__game.rounds__", game.rounds)
+  console.info("__selectedAction__", selectedAction)
   return pug`
     Div.root
+      Button(onPress=goBack) Go back
       if !game.opponent
         H3 Waiting for your opponent
       else
@@ -44,6 +57,6 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
           Div.actions
             each action in ACTIONS
               Div.action(onPress=() => onActionPress(action.type) key=action.type)
-                Icon(icon=action.icon size=70)
+                Icon(icon=action.icon size=70 color=selectedAction === action.type ? 'tomato' : '#36363c')
   `
 })
