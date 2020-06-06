@@ -17,7 +17,12 @@ export default class UserModel extends BaseModel {
     const $game = this.scope(`games.${gameId}`)
     await this.root.subscribe($game)
 
-    $game.set('opponent', userId)
+    const professorId = $game.get('professor')
+
+    if(professorId !== userId) {
+      $game.set('opponent', userId)
+    }
+
     return true
   }
 

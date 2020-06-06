@@ -9,10 +9,10 @@ export default observer(function GameListItem ({ gameId }) {
   const [user] = useQueryDoc('users', { sessionUserId: userId })
   const [game] = useDoc('games', gameId)
   const [professor] = useQueryDoc('users', {_id: game.professor})
-
+  const isProfessor = professor.id === user.id
 
   async function joinGame() {
-    await $root.scope('games').join({ gameId, userId })
+    !isProfessor && await $root.scope('games').join({ gameId, userId })
     emit('url', `/game/${gameId}`)
   }
 
@@ -22,6 +22,6 @@ export default observer(function GameListItem ({ gameId }) {
         Avatar(size='s')=professor.name
         Span.name(size='l') Professor: #{professor.name}
       Div.right
-        Button(onPress=joinGame) Join
+        Button(onPress=joinGame)=isProfessor ? 'Open' : 'Join'
   `
 })

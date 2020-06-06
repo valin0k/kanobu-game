@@ -8,8 +8,15 @@ import './index.styl'
 export default observer(function GameList () {
   const [userId] = useSession('userId')
   const [user] = useQueryDoc('users', { sessionUserId: userId })
-  const [games, $games] = useQuery('games', { open: true, professor: { $ne: user.id } })
-  console.info("__games__", games)
+  const [games, $games] = useQuery('games', {
+    open: true,
+    // professor: { $ne: user.id },
+    $or: [
+      { opponent: { $exists: false } },
+      { opponent: userId }
+    ]
+  })
+
   if(!games.length) return null
 
   return pug`
