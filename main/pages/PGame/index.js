@@ -46,7 +46,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   }
 
   async function onNextRound() {
-
+    await $root.scope('games').nextRound({ gameId })
   }
 
   function goBack() {

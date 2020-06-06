@@ -44,30 +44,29 @@ export default class UserModel extends BaseModel {
       rounds.push(lastRound)
     }
 
-    const scores = $game.get('score') || []
-    const scoreSeries = scores.reduce((acc, score) => {
-      if(acc.scores  !== score[isProfessor ? 0 : 1] || acc.opponent === score[isProfessor ? 1 : 0]) {
-        return {series: acc.series + 1, scores: score}
-      }
-    }, {series: 0, scores: 0, opponent: 0})
+    if(lastRound[0] && lastRound[1]) {
+      calculateScores()
+    }
 
-    const plusScore = Array(scoreSeries.series).fill(1).reduce((acc) => {
-      acc = acc * 2
-      return acc
-    }, 1)
+    function calculateScores() {
+      const scores = $game.get('score') || []
+      const scoreSeries = scores.reduce((acc, score) => {
+        if(acc.scores  !== score[isProfessor ? 0 : 1] || acc.opponent === score[isProfessor ? 1 : 0]) {
+          return {series: acc.series + 1, scores: score}
+        }
+      }, {series: 0, scores: 0, opponent: 0})
 
-    console.info("__scoreSeries__", scoreSeries)
-    $game.set('scores', plusScore)
+      const plusScore = Array(scoreSeries.series).fill(1).reduce((acc) => {
+        acc = acc * 2
+        return acc
+      }, 1)
 
-
-    // await this._setScore()
+      console.info("__scoreSeries__", scoreSeries)
+      $game.set('scores', plusScore)
+    }
 
     $game.set('rounds', rounds)
     return true
-  }
-
-  async _setScore({}) {
-
   }
 
   async surrender({ gameId, userId }) {
@@ -79,5 +78,12 @@ export default class UserModel extends BaseModel {
     return true
   }
 
+  async nextRound({ gameId }) {
+    const $game = this.scope(`games.${gameId}`)
+    await this.root.subscribe($game)
+    const rounds = $game.get('rounds')
 
+    $game.push('rounds', [])
+    $game.push('scores', [])
+  }
 }
