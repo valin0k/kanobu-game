@@ -88,7 +88,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
               Button(onPress=onNextRound) Next round
 
       else
-        if game.cause.type === SURRENDER
+        if game.cause && game.cause.type === SURRENDER
           H3=game.cause.userId === user.id ? 'You lose' : 'Your opponent surrendered'
       
 
