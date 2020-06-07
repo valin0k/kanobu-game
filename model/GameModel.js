@@ -1,16 +1,26 @@
 import { BaseModel } from 'startupjs/orm'
 
-const SURRENDER = 'surrender'
+export const SURRENDER = 'surrender'
+export const DRAW = 'draw'
+export const PAPER = 'paper'
+export const STONE = 'stone'
+export const CUT = 'cut'
 
+export const ACTIONS = [
+  { type: PAPER, beat: STONE },
+  { type: STONE, beat: CUT },
+  { type: CUT, beat: PAPER }
+]
 
 export default class UserModel extends BaseModel {
   async add(data = {}) {
     let id = this.id()
-    await this.root.addAsync(this, {
+    await this.root.add(this, {
       ...data,
       createdAt: Date.now(),
       open: true,
       rounds: [],
+      scores: [],
       id
     })
     return id
@@ -50,6 +60,8 @@ export default class UserModel extends BaseModel {
 
     function calculateScores() {
       const scores = $game.get('score') || []
+      const lastRoundScores = scores[scores.length - 1] || [0, 0]
+
       const scoreSeries = scores.reduce((acc, score) => {
         if(acc.scores  !== score[isProfessor ? 0 : 1] || acc.opponent === score[isProfessor ? 1 : 0]) {
           return {series: acc.series + 1, scores: score}
@@ -62,7 +74,41 @@ export default class UserModel extends BaseModel {
       }, 1)
 
       console.info("__scoreSeries__", scoreSeries)
-      $game.set('scores', plusScore)
+
+      const beforeLastIndex = lastIndex ? scores[lastIndex] - 1 : scores[lastIndex]
+
+      if(plusScore) {
+        if(whoWin(lastRound) === 0) {
+          scores[lastIndex] = [scores[beforeLastIndex][0] + plusScore, scores[beforeLastIndex][1]]
+          $game.set('scores', scores)
+        } else {
+          scores[lastIndex] = [scores[beforeLastIndex][0], scores[beforeLastIndex][1] + plusScore]
+          $game.set('scores', scores)
+        }
+        // const professorScore = isProfessor ? lastRoundScores[0] + plusScore
+        // scores[lastIndex] = [isProfessor ? lastRoundScores[0] + plusScore]
+        //
+        // $game.set('scores', [isProfessor ? scores[0] plusScore])
+      } else {
+        $game.set('scores', [scores[beforeLastIndex][0]], scores[beforeLastIndex][1])
+
+        // lastRoundScores
+      }
+    }
+
+    function whoWin(lastRound) {
+      const professor = lastRound[0]
+      const secondPlayer = lastRound[1]
+
+      if(professor === secondPlayer) return DRAW
+
+      for(let action in ACTIONS) {
+        if(action.type === professor && action.beat === secondPlayer) {
+          return 0
+        } else if(action.type === secondPlayer && action.beat === professor) {
+          return 1
+        }
+      }
     }
 
     $game.set('rounds', rounds)
@@ -73,7 +119,7 @@ export default class UserModel extends BaseModel {
     const $game = this.scope(`games.${gameId}`)
     await this.root.subscribe($game)
     $game.set('open', false)
-    $game.set('cause', SURRENDER)
+    $game.set('cause', { type: SURRENDER, userId: userId })
 
     return true
   }

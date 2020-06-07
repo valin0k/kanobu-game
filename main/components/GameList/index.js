@@ -10,10 +10,10 @@ export default observer(function GameList () {
   const [user] = useQueryDoc('users', { sessionUserId: userId })
   const [games, $games] = useQuery('games', {
     open: true,
-    // professor: { $ne: user.id },
+
     $or: [
       { opponent: { $exists: false } },
-      { opponent: userId },
+      { opponent: user.id },
       { professor: user.id }
     ]
   })
