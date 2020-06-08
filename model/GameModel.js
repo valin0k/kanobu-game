@@ -20,7 +20,7 @@ export default class UserModel extends BaseModel {
       createdAt: Date.now(),
       open: true,
       rounds: [],
-      scores: [],
+      scores: [[0, 0]],
       id
     })
     return id
@@ -48,7 +48,7 @@ export default class UserModel extends BaseModel {
     const beforeLastRound = rounds[lastIndex - 1] || []
     const lastRound = rounds[lastIndex] || []
     lastRound[isProfessor ? 0 : 1] = action
-    if(lastRound[0] && lastRound[1] || (!beforeLastRound[0] || !beforeLastRound[1])) {
+    if((lastRound[0] || lastRound[1]) || (!beforeLastRound[0] || !beforeLastRound[1])) {
       rounds[lastIndex] = lastRound
     } else {
       rounds.push(lastRound)
@@ -59,36 +59,47 @@ export default class UserModel extends BaseModel {
     }
 
     function calculateScores() {
-      const scores = $game.get('score') || [0, 0]
+      const scores = $game.get('scores') || [[0, 0]]
+      console.info("__scores__", scores.slice(0))
       const lastRoundScores = scores[scores.length - 1] || [0, 0]
-
-      const scoreSeries = scores.reduce((acc, score) => {
-        if(acc.scores  !== score[isProfessor ? 0 : 1] || acc.opponent === score[isProfessor ? 1 : 0]) {
+      console.info("__lastRoundScores__", lastRoundScores)
+      const scoresBeforeCurrent = scores.slice(0, -1)
+      console.info("__scoresBeforeCurrent__", scoresBeforeCurrent)
+      const scoreSeries = scoresBeforeCurrent.reduce((acc, score) => {
+        if(acc.scores !== score[isProfessor ? 0 : 1] || acc.opponent === score[isProfessor ? 1 : 0]) {
           return {series: acc.series + 1, scores: score}
         }
+        return acc
       }, {series: 0, scores: 0, opponent: 0})
+
+      console.info("__scoreSeries__", scoreSeries)
 
       const plusScore = Array(scoreSeries.series).fill(1).reduce((acc) => {
         acc = acc * 2
         return acc
       }, 1)
 
-      console.info("__scoreSeries__", scoreSeries)
+      console.info("__plusScore__", plusScore)
 
-      const beforeLastIndex = lastIndex ? scores[lastIndex] - 1 : scores[lastIndex]
+
+      console.info("______________________________________", )
+      console.info("__scores__", scores)
+      console.info("__lastIndex__", lastIndex)
+      console.info("__scores[lastIndex]__", scores[lastIndex])
+
+      const beforeLastIndex = lastIndex ? scores[lastIndex - 1] : scores[lastIndex]
+      console.info("__beforeLastIndex__", beforeLastIndex)
 
       if(plusScore) {
         if(whoWin(lastRound) === 0) {
-          scores[lastIndex] = [scores[beforeLastIndex][0] + plusScore, scores[beforeLastIndex][1]]
+          scores[lastIndex] = [beforeLastIndex[0] + plusScore, beforeLastIndex[1]]
+          console.info("__scores_after__", scores)
           $game.set('scores', scores)
         } else {
-          scores[lastIndex] = [scores[beforeLastIndex][0], scores[beforeLastIndex][1] + plusScore]
+          scores[lastIndex] = [beforeLastIndex[0], beforeLastIndex[1] + plusScore]
+          console.info("__scores_after__", scores)
           $game.set('scores', scores)
         }
-        // const professorScore = isProfessor ? lastRoundScores[0] + plusScore
-        // scores[lastIndex] = [isProfessor ? lastRoundScores[0] + plusScore]
-        //
-        // $game.set('scores', [isProfessor ? scores[0] plusScore])
       } else {
         $game.set('scores', [scores[beforeLastIndex][0]], scores[beforeLastIndex][1])
 
@@ -111,6 +122,7 @@ export default class UserModel extends BaseModel {
       }
     }
 
+    console.info("__rounds__", rounds)
     $game.set('rounds', rounds)
     return true
   }
@@ -128,8 +140,9 @@ export default class UserModel extends BaseModel {
     const $game = this.scope(`games.${gameId}`)
     await this.root.subscribe($game)
     const rounds = $game.get('rounds')
+    const scores = $game.get('scores')
 
     $game.push('rounds', [])
-    $game.push('scores', [])
+    $game.push('scores', scores[scores.length - 1])
   }
 }
