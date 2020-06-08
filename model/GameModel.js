@@ -59,7 +59,7 @@ export default class UserModel extends BaseModel {
     }
 
     function calculateScores() {
-      const scores = $game.get('score') || []
+      const scores = $game.get('score') || [0, 0]
       const lastRoundScores = scores[scores.length - 1] || [0, 0]
 
       const scoreSeries = scores.reduce((acc, score) => {
