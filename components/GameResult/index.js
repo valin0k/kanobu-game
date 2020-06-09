@@ -19,7 +19,7 @@ const ACTIONS = {
 const ICON_SIZE = 25
 const ICON_COLOR = '#444'
 
-export default observer(function GameResult ({ gameId, withJoin }) {
+export default observer(function GameResult ({ gameId }) {
   const [open, setOpen] = useState(false)
   const [userId] = useSession('userId')
   const [user] = useQueryDoc('users', { sessionUserId: userId })
@@ -29,7 +29,14 @@ export default observer(function GameResult ({ gameId, withJoin }) {
   const stringifyRounds = JSON.stringify(game.rounds)
   const opponentId = isProfessor ? professor.id : game.opponent
   const opponent = useQueryDoc('users', {_id: game.opponent})
-  const playerName = Array.isArray(opponent) ? opponent[0].name : opponent.name
+  const playerName = useMemo(() => {
+    if(Array.isArray(opponent)) {
+      console.info("__opponent__", opponent)
+      return opponent[0] ? opponent[0].name : ''
+    }
+    return opponent ? opponent.name : ''
+    // Array.isArray(opponent) ? opponent[0].name : 1 // (opponent && opponent.name)
+  }, [opponent])
 
   const columns = [
     {
@@ -75,7 +82,7 @@ export default observer(function GameResult ({ gameId, withJoin }) {
     })
   }, [stringifyRounds])
 
-  const opponentName = isProfessor ? playerName : professor.name
+  const opponentName = (isProfessor ? playerName : professor.name) || 'Unknown player'
   return pug`
     Div.root
       Collapse(open=open onChange=() => setOpen(!open))
