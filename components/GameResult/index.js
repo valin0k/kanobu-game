@@ -31,11 +31,9 @@ export default observer(function GameResult ({ gameId }) {
   const opponent = useQueryDoc('users', {_id: game.opponent})
   const playerName = useMemo(() => {
     if(Array.isArray(opponent)) {
-      console.info("__opponent__", opponent)
       return opponent[0] ? opponent[0].name : ''
     }
     return opponent ? opponent.name : ''
-    // Array.isArray(opponent) ? opponent[0].name : 1 // (opponent && opponent.name)
   }, [opponent])
 
   const columns = [
