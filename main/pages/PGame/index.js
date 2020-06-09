@@ -106,7 +106,5 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
         
       Div.results
         GameResult(gameId=game.id)
-      
-
   `
 })
