@@ -13,7 +13,7 @@ export const ACTIONS = [
 ]
 
 export default class UserModel extends BaseModel {
-  async add(data = {}) {
+  async addGame(data = {}) {
     let id = this.id()
     await this.root.add(this, {
       ...data,

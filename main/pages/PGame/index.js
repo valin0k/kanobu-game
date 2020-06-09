@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo } from 'react'
-import {$root, observer, useDoc, useQueryDoc, useSession, emit} from 'startupjs'
+import {$root, observer, useDoc, useSession, emit} from 'startupjs'
 import { Text, ScrollView } from 'react-native'
 import { Content, Div, H3, Icon, Button, Span } from '@startupjs/ui'
 import { faScroll, faCut, faCube } from '@fortawesome/free-solid-svg-icons'
@@ -15,7 +15,7 @@ const ACTIONS = [
 
 export default observer(function PGame ({match: {params: {gameId}}}) {
   const [userId] = useSession('userId')
-  const [user] = useQueryDoc('users', { sessionUserId: userId })
+  const [user] = useDoc('users', userId)
   const [game, $game] = useDoc('games', gameId)
   const isProfessor = user.id === game.professor
   const gameRounds = game.rounds

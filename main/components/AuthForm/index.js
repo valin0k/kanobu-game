@@ -16,7 +16,8 @@ export default observer(function TestComponent ({ style }) {
 
   async function onSubmit() {
     if(!nameValue) return
-    await $root.scope('users').add({name: nameValue, sessionUserId: userId })
+
+    await $root.scope('users').addUser({name: nameValue, id: userId })
   }
 
   function onChangeText(value) {

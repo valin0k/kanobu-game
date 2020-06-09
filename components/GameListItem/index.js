@@ -1,12 +1,12 @@
 import React from 'react'
-import {observer, useSession, useQueryDoc, $root, useDoc, emit} from 'startupjs'
+import {observer, useSession, $root, useDoc, emit} from 'startupjs'
 import { ScrollView, Text } from 'react-native'
 import { Button, Avatar, Div, Span } from '@startupjs/ui'
 import './index.styl'
 
 export default observer(function GameListItem ({ gameId }) {
   const [userId] = useSession('userId')
-  const [user] = useQueryDoc('users', { sessionUserId: userId })
+  const [user] = useDoc('users', userId)
   const [game] = useDoc('games', gameId)
   const [professor] = useQueryDoc('users', {_id: game.professor})
   const isProfessor = professor.id === user.id
