@@ -60,24 +60,61 @@ export default class UserModel extends BaseModel {
 
     function calculateScores() {
       const scores = $game.get('scores') || [[0, 0]]
-      console.info("__scores__", scores.slice(0))
       const lastRoundScores = scores[scores.length - 1] || [0, 0]
-      console.info("__lastRoundScores__", lastRoundScores)
       const scoresBeforeCurrent = scores.slice(0, -1)
-      console.info("__scoresBeforeCurrent__", scoresBeforeCurrent)
-      const scoreSeries = scoresBeforeCurrent.reduce((acc, score) => {
-        if(acc.scores !== score[isProfessor ? 0 : 1] || acc.opponent === score[isProfessor ? 1 : 0]) {
-          return {series: acc.series + 1, scores: score}
+      const roundsBeforeCurrent = rounds.slice(0, -1)
+
+      const winner = whoWin(lastRound)
+      // console.info("__scoresBeforeCurrent__", scoresBeforeCurrent)
+console.info("__winner__", winner)
+
+      const scoreSeries = roundsBeforeCurrent.reduceRight((acc, round) => {
+        const roundWinner = whoWin(round)
+        const skip = { series: acc.series, currentWinner: 'skip' }
+
+        if(roundWinner !== winner && roundWinner !== DRAW) return skip
+        if(acc.currentWinner === 'skip') return skip
+
+        if(roundWinner === DRAW) {
+          console.info("__DRAWwwww__", )
+          return acc
+        } else if (roundWinner === 1 && (acc.currentWinner === 'no' || acc.currentWinner === 1)) {
+          console.info("__11111111111111111111__", )
+          acc = {series: acc.series + 1, currentWinner: 1}
+          return acc
+        } else if (!roundWinner && (acc.currentWinner === 'no' || acc.currentWinner === 0)) {
+          acc = {series: acc.series + 1, currentWinner: 0}
+          console.info("__000000000000000000__", )
+          return acc
         }
         return acc
-      }, {series: 0, scores: 0, opponent: 0})
+      }, { series: 0, currentWinner: 'no' }) //.series
+
+
+      // const scoreSeries = scoresBeforeCurrent.reduceRight((acc, score) => {
+      //   if(winner === DRAW) {
+      //     console.info("__DRAWwwww__", )
+      //     return acc
+      //   } else if (winner === 1 && (acc.currentWinner === 'no' || acc.currentWinner === 1)) {
+      //     console.info("__11111111111111111111__", )
+      //     acc = {series: acc.series + 1, currentWinner: 1}
+      //     return acc
+      //   } else if (!winner && (acc.currentWinner === 'no' || acc.currentWinner === 0)) {
+      //     acc = {series: acc.series + 1, currentWinner: 0}
+      //     console.info("__000000000000000000__", )
+      //     return acc
+      //   }
+      //   return acc
+      // }, { series: 0, prevScores: 0, currentWinner: 'no' }) //.series
 
       console.info("__scoreSeries__", scoreSeries)
 
-      const plusScore = Array(scoreSeries.series).fill(1).reduce((acc) => {
+      let plusScore = Array(scoreSeries.series).fill(1).reduce((acc, _, i) => {
         acc = acc * 2
         return acc
       }, 1)
+
+      plusScore = plusScore > 1 ? plusScore - 1 : plusScore
 
       console.info("__plusScore__", plusScore)
 
@@ -90,21 +127,36 @@ export default class UserModel extends BaseModel {
       const beforeLastIndex = lastIndex ? scores[lastIndex - 1] : scores[lastIndex]
       console.info("__beforeLastIndex__", beforeLastIndex)
 
-      if(plusScore) {
-        if(whoWin(lastRound) === 0) {
-          scores[lastIndex] = [beforeLastIndex[0] + plusScore, beforeLastIndex[1]]
-          console.info("__scores_after__", scores)
-          $game.set('scores', scores)
-        } else {
-          scores[lastIndex] = [beforeLastIndex[0], beforeLastIndex[1] + plusScore]
-          console.info("__scores_after__", scores)
-          $game.set('scores', scores)
-        }
-      } else {
-        $game.set('scores', [scores[beforeLastIndex][0]], scores[beforeLastIndex][1])
-
-        // lastRoundScores
+      if(!winner) {
+        scores[lastIndex] = [beforeLastIndex[0] + plusScore, beforeLastIndex[1]]
+        console.info("__scores_after__", scores)
+        $game.set('scores', scores)
+      } else if(winner === 1) {
+        scores[lastIndex] = [beforeLastIndex[0], beforeLastIndex[1] + plusScore]
+        console.info("__scores_after__", scores)
+        $game.set('scores', scores)
+      } else if(winner === DRAW) {
+        console.info("__FRAWWWWWWWWWWWWWW__", )
+        scores[lastIndex] = [beforeLastIndex[0], beforeLastIndex[1]]
+        $game.set('scores', scores)
       }
+
+      // if(plusScore) {
+      //   if(whoWin(lastRound) === 0) {
+      //     scores[lastIndex] = [beforeLastIndex[0] + plusScore, beforeLastIndex[1]]
+      //     console.info("__scores_after__", scores)
+      //     $game.set('scores', scores)
+      //   } else {
+      //     scores[lastIndex] = [beforeLastIndex[0], beforeLastIndex[1] + plusScore]
+      //     console.info("__scores_after__", scores)
+      //     $game.set('scores', scores)
+      //   }
+      // } else {
+      //   console.info("__FRAWWWWWWWWWWWWWW__", )
+      //   $game.set('scores', [scores[beforeLastIndex][0]], scores[beforeLastIndex][1])
+      //
+      //   // lastRoundScores
+      // }
     }
 
     function whoWin(lastRound) {
@@ -113,13 +165,21 @@ export default class UserModel extends BaseModel {
 
       if(professor === secondPlayer) return DRAW
 
-      for(let action in ACTIONS) {
+      for(let action of ACTIONS) {
+        console.info("______________________________", )
+        console.info("__professor__", professor)
+        console.info("__secondPlayer__", secondPlayer)
+        console.info("__action.type__", action.type)
+        console.info("__action.beat__", action.beat)
+        console.info("__action__", action)
+
         if(action.type === professor && action.beat === secondPlayer) {
           return 0
         } else if(action.type === secondPlayer && action.beat === professor) {
           return 1
         }
       }
+      console.info("__AAAAAAAAAAAAAAAAAAAAAA__", )
     }
 
     console.info("__rounds__", rounds)
