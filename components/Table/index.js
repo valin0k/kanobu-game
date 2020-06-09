@@ -4,22 +4,6 @@ import { observer } from 'startupjs'
 import { Icon } from '@startupjs/ui'
 import './index.styl'
 
-// // @Data Sample
-//
-// const columns = [{
-//   title: 'Name',
-//   dataIndex: 'name',
-//   key: 'name',
-//   render: data => data.age
-// }]
-//
-// let dataSource = [{
-//   id: '1',
-//   name: 'Mike',
-//   age: 32,
-//   address: '10 Downing Street'
-// }]
-
 export default observer(function ({ dataSource, columns, align, shadow }) {
   const [sort, setSort] = useState({})
 

@@ -4,6 +4,4 @@ import GameModel from './GameModel'
 export default function (racer) {
   racer.orm('users', UserModel)
   racer.orm('games', GameModel)
-  // racer.orm('users.*', UserModel)
-  // racer.orm('games.*', GameModel)
 }

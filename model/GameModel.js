@@ -82,7 +82,7 @@ export default class UserModel extends BaseModel {
           return acc
         }
         return acc
-      }, { series: 0, currentWinner: 'no' }) //.series
+      }, { series: 0, currentWinner: 'no' })
 
       let plusScore = Array(scoreSeries.series).fill(1).reduce((acc, _, i) => {
         acc = acc * 2
@@ -145,7 +145,7 @@ export default class UserModel extends BaseModel {
     const $game = this.scope(`games.${gameId}`)
     await this.root.subscribe($game)
     $game.set('open', false)
-    
+
     return true
   }
 }

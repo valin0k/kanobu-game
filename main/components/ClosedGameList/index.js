@@ -17,7 +17,7 @@ export default observer(function ClosedGameList () {
       { professor: user.id }
     ]
   })
-console.info("__games000000__", games)
+
   if(!games.length) return null
 
   return pug`

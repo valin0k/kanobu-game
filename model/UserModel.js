@@ -3,11 +3,10 @@ import { BaseModel } from 'startupjs/orm'
 export default class UserModel extends BaseModel {
   async add(data = {}) {
     let id = this.id()
-    console.info("__id__", id)
-    await this.root.addAsync(this, {
+
+    await this.root.add(this, {
       ...data,
       createdAt: Date.now(),
-      // id
     })
     return id
   }

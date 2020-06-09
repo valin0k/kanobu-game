@@ -57,7 +57,6 @@ export default observer(function GameResult ({ gameId, withJoin }) {
       render: ({ score }) => {
         const yourScore = isProfessor ? score[0] : score[1]
         const opponentScore = isProfessor ? score[1] : score[0]
-        console.info("__score__", score[0])
         return pug`
           Div.field
             Span #{yourScore} / #{opponentScore}
