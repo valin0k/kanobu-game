@@ -85,8 +85,11 @@ export default observer(function GameResult ({ gameId, withJoin }) {
             Span=lose ? 'You surrendered' : 'Your opponent ' + opponentName +  ' surrendered'
           else if !game.open
             - const lastRound = game.scores[game.scores.length - 1]
+            - const draw = game.scores[lastRound[0]] === game.scores[lastRound[1]]
             - const isProfWin = game.scores[lastRound[0]] > game.scores[lastRound[1]]
-            if (isProfWin && isProfessor) || (!isProfWin && !isProfessor)
+            if draw
+              Span Draw vs #{opponentName}
+            else if (isProfWin && isProfessor) || (!isProfWin && !isProfessor)
               Span You won #{opponentName}
             else
               Span You lost #{opponentName}
