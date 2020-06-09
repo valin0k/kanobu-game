@@ -1,8 +1,12 @@
-// 1u is a 8px grid unit. 1u === 8px
+.form
+  margin-top 2u
 
-.root
-  max-width $UI.media.mobile
-  align-items center
+  +tablet()
+    flex-direction row
 
-.rest
-  align-self stretch
+.button
+  margin-top 2u
+
+  +tablet()
+    margin-top 0
+    margin-left 2u

@@ -1,10 +1,9 @@
 import React from 'react'
 import { observer, useSession, useQueryDoc } from 'startupjs'
 import { ScrollView } from 'react-native'
-import { TestComponent } from 'components'
 import { AuthForm, NewGame, GameList, ClosedGameList } from 'main/components'
 import './index.styl'
-import { Content, H3 } from '@startupjs/ui'
+import { Content, H3, Div, Span } from '@startupjs/ui'
 
 export default observer(function PHome () {
   const [userId] = useSession('userId')
@@ -12,13 +11,14 @@ export default observer(function PHome () {
 
   return pug`
     ScrollView.root
-      Content
-        if user
-          H3 Hi, #{user.name}
-          NewGame
-          GameList
-          ClosedGameList
-        else
-          AuthForm
+      Div.content
+        Div.wrapper
+          if user
+            Span(size='xxl') Hi, #{user.name}
+            NewGame
+            GameList
+            ClosedGameList
+          else
+            AuthForm
   `
 })

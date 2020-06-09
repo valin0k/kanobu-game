@@ -1,17 +1,37 @@
 $color = #C1B7DF
 
 .root
-  padding 2u 0
-  flex 1
+  padding 2u
+
 
 .text
-  color $color
   font-weight bold
   font-size 20px
 
 .actions
+  align-items center
+  margin-top 3u
   +tablet()
     flex-direction row
 
 .action
   padding 3u
+  border-width 1u
+  border-color #36363c
+  border-radius 10u
+  margin-top 2u
+
+  &.first
+    margin-top 0
+
+.backButton
+  flex-direction row
+
+.waitText
+  margin-top 2u
+
+.results
+  margin-top 2u
+
+.content
+  margin-top 2u

@@ -1,7 +1,7 @@
 import React from 'react'
 import {observer, useSession, useQueryDoc, $root, emit} from 'startupjs'
 import { ScrollView, Text } from 'react-native'
-import { Button } from '@startupjs/ui'
+import { Button, Div } from '@startupjs/ui'
 import './index.styl'
 
 export default observer(function NewGame () {
@@ -14,6 +14,7 @@ export default observer(function NewGame () {
   }
 
   return pug`
-    Button(onPress=createGame) Create a new game
+    Div.root
+      Button(onPress=createGame) Create a new game
   `
 })
