@@ -21,8 +21,15 @@ $color = #C1B7DF
   border-radius 10u
   margin-top 2u
 
+  +tablet()
+    margin-top 0
+    margin-left 2u
+
   &.first
     margin-top 0
+
+    +tablet()
+      margin-left 0
 
 .backButton
   flex-direction row
@@ -35,3 +42,14 @@ $color = #C1B7DF
 
 .content
   margin-top 2u
+
+.buttonWrapper
+  margin-top 2u
+  +tablet()
+    margin-top 0
+    margin-left 2u
+
+  &-first
+    +tablet()
+      margin-left 0
+

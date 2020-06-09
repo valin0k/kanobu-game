@@ -61,7 +61,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   }
 
   async function onFinishGame() {
-
+    await $root.scope('games').finishGame({ gameId })
   }
 
   function goBack() {
@@ -90,11 +90,14 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
                 )
                   Icon(icon=action.icon size=70 color=selected ? 'tomato' : '#36363c')
           Div.actions
-            Button(onPress=onSurrender) Surrender
+            Div.buttonWrapper(styleName={first: true})
+              Button.button(onPress=onSurrender) Surrender
             if canStartNextRound
-              Button(onPress=onNextRound) Next round
+              Div.buttonWrapper
+                Button.button(onPress=onNextRound) Next round
             if isProfessor
-              Button(onPress=onFinishGame) Finish game
+              Div.buttonWrapper
+                Button.button(onPress=onFinishGame) Finish game
 
       else
         if game.cause && game.cause.type === SURRENDER

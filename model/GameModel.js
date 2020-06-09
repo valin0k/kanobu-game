@@ -140,4 +140,12 @@ export default class UserModel extends BaseModel {
     $game.push('rounds', [])
     $game.push('scores', scores[scores.length - 1])
   }
+
+  async finishGame({ gameId }) {
+    const $game = this.scope(`games.${gameId}`)
+    await this.root.subscribe($game)
+    $game.set('open', false)
+    
+    return true
+  }
 }
