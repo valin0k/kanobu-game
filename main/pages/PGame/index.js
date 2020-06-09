@@ -4,6 +4,7 @@ import { Text, ScrollView } from 'react-native'
 import { Content, Div, H3, Icon, Button } from '@startupjs/ui'
 import { faScroll, faCut, faCube } from '@fortawesome/free-solid-svg-icons'
 import { SURRENDER, PAPER, CUT, STONE } from 'model/GameModel'
+import { GameResult } from 'components'
 import './index.styl'
 
 const ACTIONS = [
@@ -90,6 +91,8 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
       else
         if game.cause && game.cause.type === SURRENDER
           H3=game.cause.userId === user.id ? 'You lose' : 'Your opponent surrendered'
+          
+      GameResult(gameId=game.id)
       
 
   `
