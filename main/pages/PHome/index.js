@@ -2,7 +2,7 @@ import React from 'react'
 import { observer, useSession, useQueryDoc } from 'startupjs'
 import { ScrollView } from 'react-native'
 import { TestComponent } from 'components'
-import { AuthForm, NewGame, GameList } from 'main/components'
+import { AuthForm, NewGame, GameList, ClosedGameList } from 'main/components'
 import './index.styl'
 import { Content, H3 } from '@startupjs/ui'
 
@@ -17,6 +17,7 @@ export default observer(function PHome () {
           H3 Hi, #{user.name}
           NewGame
           GameList
+          ClosedGameList
         else
           AuthForm
   `

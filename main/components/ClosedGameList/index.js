@@ -2,14 +2,14 @@ import React from 'react'
 import { observer, useSession, useQueryDoc, $root, useQuery} from 'startupjs'
 import { ScrollView, Text } from 'react-native'
 import { Button, H4, Span, Div, Avatar } from '@startupjs/ui'
-import { GameListItem } from 'components'
+import { GameResult } from 'components'
 import './index.styl'
 
-export default observer(function GameList () {
+export default observer(function ClosedGameList () {
   const [userId] = useSession('userId')
   const [user] = useQueryDoc('users', { sessionUserId: userId })
   const [games, $games] = useQuery('games', {
-    open: true,
+    open: false,
 
     $or: [
       { opponent: { $exists: false } },
@@ -17,14 +17,14 @@ export default observer(function GameList () {
       { professor: user.id }
     ]
   })
-
+console.info("__games000000__", games)
   if(!games.length) return null
 
   return pug`
     Div.root
-      H4 Games list
+      H4  Closed games list
       Div.games
         each game in games
-          GameListItem(gameId=game.id key=game.id)
+          GameResult(gameId=game.id key=game.id)
   `
 })

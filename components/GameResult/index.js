@@ -7,6 +7,9 @@ import './index.styl'
 import { faCube, faCut, faScroll } from "@fortawesome/free-solid-svg-icons"
 import { CUT, PAPER, STONE } from "model/GameModel"
 
+const CollapseHeader = Collapse.Header
+const CollapseContent = Collapse.Content
+
 const ACTIONS = {
   paper: faScroll,
   cut: faCut,
@@ -16,7 +19,7 @@ const ACTIONS = {
 const ICON_SIZE = 25
 const ICON_COLOR = '#444'
 
-export default observer(function GameResult ({ gameId }) {
+export default observer(function GameResult ({ gameId, withJoin }) {
   const [open, setOpen] = useState(false)
   const [userId] = useSession('userId')
   const [user] = useQueryDoc('users', { sessionUserId: userId })
@@ -70,10 +73,14 @@ export default observer(function GameResult ({ gameId }) {
       }
     })
   }, [stringifyRounds])
-
+  console.info("__111111111__", )
+  // withJoin
   return pug`
     Div.root
-      Collapse(title='game' open=open onChange=() => setOpen(!open))
-        Table(columns=columns dataSource=data)
+      Collapse(open=open onChange=() => setOpen(!open))
+        CollapseHeader
+          Span xxxxx
+        CollapseContent
+          Table(columns=columns dataSource=data)
   `
 })
