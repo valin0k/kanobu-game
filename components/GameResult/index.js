@@ -1,9 +1,20 @@
 import React, { useState, useMemo } from 'react'
 import {observer, useSession, useQueryDoc, useDoc} from 'startupjs'
 import { ScrollView, Text } from 'react-native'
-import { Button, Avatar, Div, Span, Collapse } from '@startupjs/ui'
+import { Button, Avatar, Div, Span, Collapse, Icon } from '@startupjs/ui'
 import { Table } from 'components'
 import './index.styl'
+import { faCube, faCut, faScroll } from "@fortawesome/free-solid-svg-icons"
+import { CUT, PAPER, STONE } from "model/GameModel"
+
+const ACTIONS = {
+  paper: faScroll,
+  cut: faCut,
+  stone: faCube
+}
+
+const ICON_SIZE = 25
+const ICON_COLOR = '#444'
 
 export default observer(function GameResult ({ gameId }) {
   const [open, setOpen] = useState(false)
@@ -14,6 +25,7 @@ export default observer(function GameResult ({ gameId }) {
   const isProfessor = professor.id === user.id
   const stringifyRounds = JSON.stringify(game.rounds)
 
+
   const columns = [
     {
       title: 'You',
@@ -21,7 +33,7 @@ export default observer(function GameResult ({ gameId }) {
       dataIndex: 'you',
       render: ({ you }) => pug`
         Div.field
-          Span=you
+          Icon(icon=ACTIONS[you] size=ICON_SIZE color=ICON_COLOR)  
       `
     },
     {
@@ -30,7 +42,7 @@ export default observer(function GameResult ({ gameId }) {
       dataIndex: 'opponent',
       render: ({ opponent }) => pug`
         Div.field
-          Span=opponent
+          Icon(icon=ACTIONS[opponent] size=ICON_SIZE color=ICON_COLOR)  
       `
     },
     {
@@ -50,7 +62,7 @@ export default observer(function GameResult ({ gameId }) {
   ]
 
   const data = useMemo(() => {
-    return game.rounds.map((round, i) => {
+    return game.rounds.slice(0, -1).map((round, i) => {
       return {
         you: isProfessor ? round[0] : round[1],
         opponent: isProfessor ? round[1] : round[0],
