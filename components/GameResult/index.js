@@ -27,7 +27,9 @@ export default observer(function GameResult ({ gameId, withJoin }) {
   const [professor] = useQueryDoc('users', {_id: game.professor})
   const isProfessor = professor.id === user.id
   const stringifyRounds = JSON.stringify(game.rounds)
-
+  const opponentId = isProfessor ? professor.id : game.opponent
+  const opponent = useQueryDoc('users', {_id: game.opponent})
+  const playerName = Array.isArray(opponent) ? opponent[0].name : opponent.name
 
   const columns = [
     {
@@ -73,22 +75,24 @@ export default observer(function GameResult ({ gameId, withJoin }) {
       }
     })
   }, [stringifyRounds])
-  console.info("__111111111__", )
-  // withJoin
+
+  const opponentName = isProfessor ? playerName : professor.name
   return pug`
     Div.root
       Collapse(open=open onChange=() => setOpen(!open))
         CollapseHeader
           if !game.open && game.cause
             - const lose = game.cause.userId === user.id
-            Span=lose ? 'You surrendered' : 'Your opponent surrendered'
+            Span=lose ? 'You surrendered' : 'Your opponent ' + opponentName +  ' surrendered'
           else if !game.open
             - const lastRound = game.scores[game.scores.length - 1]
             - const isProfWin = game.scores[lastRound[0]] > game.scores[lastRound[1]]
             if (isProfWin && isProfessor) || (!isProfWin && !isProfessor)
-              Span You win
+              Span You won #{opponentName}
             else
-              Span You lose
+              Span You lost #{opponentName}
+          else
+            Span You are playing vs #{opponentName}
         CollapseContent
           Table(columns=columns dataSource=data)
   `

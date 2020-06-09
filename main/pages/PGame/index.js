@@ -60,6 +60,10 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
     await $root.scope('games').nextRound({ gameId })
   }
 
+  async function onFinishGame() {
+
+  }
+
   function goBack() {
     emit('url', '/')
   }
@@ -89,6 +93,8 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
             Button(onPress=onSurrender) Surrender
             if canStartNextRound
               Button(onPress=onNextRound) Next round
+            if isProfessor
+              Button(onPress=onFinishGame) Finish game
 
       else
         if game.cause && game.cause.type === SURRENDER
