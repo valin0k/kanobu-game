@@ -101,7 +101,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
 
       else
         if game.cause && game.cause.type === SURRENDER
-          H3=game.cause.userId === user.id ? 'You lose' : 'Your opponent surrendered'
+          Span.surrenderText(size='xxl')=game.cause.userId === user.id ? 'You lose' : 'Your opponent surrendered'
         
         
       Div.results

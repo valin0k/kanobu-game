@@ -85,7 +85,10 @@ export default class UserModel extends BaseModel {
       }, { series: 0, currentWinner: 'no' })
 
       let plusScore = Array(scoreSeries.series).fill(1).reduce((acc, _, i) => {
-        acc = acc * 2
+        // if(i > 1) {
+        //
+        // }
+        acc = acc + (i + 1)
         return acc
       }, 1)
 
