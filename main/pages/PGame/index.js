@@ -20,7 +20,6 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   const userIndex = useMemo(() => {
     return game.userIds.findIndex(id => id === userId)
   }, [])
-  // const professor = users.find(user => user.id === userId)
 
   const isProfessor = userId === game.professor
   const gameRounds = game.rounds
@@ -41,8 +40,6 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   }, [stringifyRounds])
 
   useEffect(() => {
-    // if(!user || !game) return
-
     if(!isProfessor) {
       joinGame()
     }
@@ -71,7 +68,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   function goBack() {
     emit('url', '/')
   }
-console.info("__game.userIds.length__", game.userIds.length)
+
   return pug`
     Div.root
       Div.backButton
@@ -113,8 +110,7 @@ console.info("__game.userIds.length__", game.userIds.length)
       else
         if game.cause && game.cause.type === SURRENDER
           Span.surrenderText(size='xxl')=game.cause.userId === userId ? 'You lose' : 'Your opponent surrendered'
-        
-        
+
       Div.results
         GameResult(gameId=game.id)
   `
