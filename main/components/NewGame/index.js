@@ -1,6 +1,5 @@
 import React from 'react'
-import {observer, useSession, $root, emit} from 'startupjs'
-import { ScrollView, Text } from 'react-native'
+import { observer, useSession, $root, emit } from 'startupjs'
 import { Button, Div } from '@startupjs/ui'
 import './index.styl'
 

@@ -1,7 +1,6 @@
 import React from 'react'
-import {observer, useSession, $root, useQuery} from 'startupjs'
-import { ScrollView, Text } from 'react-native'
-import { Button, H4, Span, Div, Avatar } from '@startupjs/ui'
+import { observer, useSession, useQuery } from 'startupjs'
+import { H4, Div } from '@startupjs/ui'
 import { GameListItem } from 'components'
 import './index.styl'
 
