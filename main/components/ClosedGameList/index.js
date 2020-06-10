@@ -10,7 +10,6 @@ export default observer(function ClosedGameList () {
   const [user] = useDoc('users', userId)
   const [games, $games] = useQuery('games', {
     open: false,
-
     $or: [
       { opponent: { $exists: false } },
       { opponent: user.id },

@@ -21,6 +21,7 @@ export default class UserModel extends BaseModel {
       open: true,
       rounds: [],
       scores: [[0, 0]],
+      userIds: [],
       id
     })
     return id
@@ -31,9 +32,10 @@ export default class UserModel extends BaseModel {
     await this.root.subscribe($game)
 
     const professorId = $game.get('professor')
+    const userIds = $game.get('userIds')
 
-    if(professorId !== userId) {
-      $game.set('opponent', userId)
+    if(professorId !== userId && !userIds.includes(userId)) {
+      $game.push('userIds', userId)
     }
 
     return true
@@ -109,14 +111,14 @@ export default class UserModel extends BaseModel {
     }
 
     function whoWin(lastRound) {
-      const professor = lastRound[0]
+      const firstPlayer = lastRound[0]
       const secondPlayer = lastRound[1]
-      if(professor === secondPlayer) return DRAW
+      if(firstPlayer === secondPlayer) return DRAW
 
       for(let action of ACTIONS) {
-        if(action.type === professor && action.beat === secondPlayer) {
+        if(action.type === firstPlayer && action.beat === secondPlayer) {
           return 0
-        } else if(action.type === secondPlayer && action.beat === professor) {
+        } else if(action.type === secondPlayer && action.beat === firstPlayer) {
           return 1
         }
       }

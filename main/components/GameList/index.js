@@ -12,13 +12,15 @@ export default observer(function GameList () {
     open: true,
 
     $or: [
-      { opponent: { $exists: false } },
-      { opponent: user.id },
-      { professor: user.id }
-    ]
+      { 'userIds.3': { $exists: false } },
+      // { userIds: {$lt: 2} }
+      { 'userIds.2': { $exists: false }, professor: userId },
+      // { userIds: {$size: {$lt: 2}} }
+    ],
   })
 
   if(!games.length) return null
+console.info("__games__", games)
 
   return pug`
     Div.root
