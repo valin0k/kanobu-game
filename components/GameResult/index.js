@@ -1,11 +1,10 @@
 import React, { useState, useMemo } from 'react'
-import {observer, useSession, useQueryDoc, useDoc, useQuery} from 'startupjs'
-import { ScrollView, Text } from 'react-native'
-import { Button, Avatar, Div, Span, Collapse, Icon } from '@startupjs/ui'
+import { observer, useSession, useDoc, useQuery } from 'startupjs'
+import { Div, Span, Collapse, Icon } from '@startupjs/ui'
 import { Table } from 'components'
-import './index.styl'
 import { faCube, faCut, faScroll } from "@fortawesome/free-solid-svg-icons"
 import { CUT, PAPER, STONE } from "model/GameModel"
+import './index.styl'
 
 const CollapseHeader = Collapse.Header
 const CollapseContent = Collapse.Content

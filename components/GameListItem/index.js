@@ -1,5 +1,5 @@
-import React, {useMemo} from 'react'
-import {observer, useSession, $root, useDoc, emit} from 'startupjs'
+import React, { useMemo } from 'react'
+import { observer, useSession, $root, useDoc, emit } from 'startupjs'
 import { Button, Avatar, Div, Span } from '@startupjs/ui'
 import './index.styl'
 
