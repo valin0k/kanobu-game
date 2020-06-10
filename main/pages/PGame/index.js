@@ -21,7 +21,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
     return game.userIds.findIndex(id => id === userId)
   }, [])
 
-  const isProfessor = userId === game.professor
+  const isProfessor = userId === game.profId
   const gameRounds = game.rounds
   const stringifyRounds = JSON.stringify(gameRounds)
 

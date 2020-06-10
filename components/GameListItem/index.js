@@ -6,11 +6,11 @@ import './index.styl'
 export default observer(function GameListItem ({ gameId }) {
   const [userId] = useSession('userId')
   const [game] = useDoc('games', gameId)
-  const [professor] = useDoc('users', game.professor)
+  const [professor] = useDoc('users', game.profId)
 
   const inGame = useMemo(() => {
     const userIds = game.userIds || []
-    return userIds.includes(userId) || game.professor === userId
+    return userIds.includes(userId) || game.profId === userId
   }, [JSON.stringify(game.userIds)])
 
   async function joinGame() {

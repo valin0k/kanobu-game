@@ -14,7 +14,7 @@ export default observer(function ClosedGameList () {
           { userIds: { $size: 2 } },
         ],
       },
-      { professor: userId },
+      { profId: userId },
       { userIds: { $in: [userId] } }
     ]
   })

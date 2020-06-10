@@ -7,7 +7,7 @@ export default observer(function NewGame () {
   const [userId] = useSession('userId')
 
   async function createGame() {
-    const id = await $root.scope('games').addGame({ professor: userId })
+    const id = await $root.scope('games').addGame({ profId: userId })
     emit('url', `/game/${id}`)
   }
 

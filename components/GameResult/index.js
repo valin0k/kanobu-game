@@ -30,7 +30,7 @@ export default observer(function GameResult ({ gameId }) {
   }, [JSON.stringify(game.userIds)])
 
   const [users] = useQuery('users', { _id: { $in: userIds } })
-  const isProfessor = userId === game.professor
+  const isProfessor = userId === game.profId
 
   const players = users.filter(user => (game.userIds || []).includes(user.id))
 
