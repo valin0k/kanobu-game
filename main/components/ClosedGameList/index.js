@@ -7,13 +7,16 @@ import './index.styl'
 
 export default observer(function ClosedGameList () {
   const [userId] = useSession('userId')
-  const [user] = useDoc('users', userId)
   const [games, $games] = useQuery('games', {
     open: false,
     $or: [
-      { opponent: { $exists: false } },
-      { opponent: user.id },
-      { professor: user.id }
+      {
+        $nor: [
+          { userIds: { $size: 2 } },
+        ],
+      },
+      { professor: userId },
+      {userIds: {$in: [userId]}}
     ]
   })
 

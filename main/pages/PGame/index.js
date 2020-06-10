@@ -76,7 +76,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   function goBack() {
     emit('url', '/')
   }
-
+console.info("__game.userIds.length__", game.userIds.length)
   return pug`
     Div.root
       Div.backButton

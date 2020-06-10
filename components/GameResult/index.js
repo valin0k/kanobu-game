@@ -31,45 +31,37 @@ export default observer(function GameResult ({ gameId }) {
   }, [JSON.stringify(game.userIds)])
 
   const [users] = useQuery('users', { _id: { $in: userIds } })
+  console.info("__users__", users)
   const isProfessor = userId === game.professor
-  const players = useMemo(() => {
-    return users.filter(user => (game.userIds || []).includes(user.id))
-  }, [game.userIds.length])
+
+  const players = users.filter(user => (game.userIds || []).includes(user.id))
 
   const userIndex = useMemo(() => {
     return game.userIds.findIndex(id => id === userId)
   }, [])
 
-  // const [user] = useQueryDoc('users', { sessionUserId: userId })
-  // const [professor] = useQueryDoc('users', {_id: game.professor})
-  // const isProfessor = professor.id === user.id
+  const firstPlayerName = players[0] && players[0].name || '-'
+  const secondPlayerName = (players[1] && players[1].name) || '-'
+
   const stringifyRounds = JSON.stringify(game.rounds)
-  // const opponentId = isProfessor ? professor.id : game.opponent
-  // const opponent = useQueryDoc('users', {_id: game.opponent})
-  // const playerName = useMemo(() => {
-  //   if(Array.isArray(opponent)) {
-  //     return opponent[0] ? opponent[0].name : ''
-  //   }
-  //   return opponent ? opponent.name : ''
-  // }, [opponent])
 
   const columns = [
     {
-      title: 'You',
-      key: 'you',
-      dataIndex: 'you',
-      render: ({ you }) => pug`
+      title: firstPlayerName,
+      key: 'first',
+      dataIndex: 'first',
+      render: ({ first }) => pug`
         Div.field
-          Icon(icon=ACTIONS[you] size=ICON_SIZE color=ICON_COLOR)  
+          Icon(icon=ACTIONS[first] size=ICON_SIZE color=ICON_COLOR)  
       `
     },
     {
-      title: 'Opponent',
-      key: 'opponent',
-      dataIndex: 'opponent',
-      render: ({ opponent }) => pug`
+      title: secondPlayerName,
+      key: 'second',
+      dataIndex: 'second',
+      render: ({ second }) => pug`
         Div.field
-          Icon(icon=ACTIONS[opponent] size=ICON_SIZE color=ICON_COLOR)  
+          Icon(icon=ACTIONS[second] size=ICON_SIZE color=ICON_COLOR)  
       `
     },
     {
@@ -81,7 +73,7 @@ export default observer(function GameResult ({ gameId }) {
         const opponentScore = isProfessor ? score[1] : score[0]
         return pug`
           Div.field
-            Span #{yourScore} / #{opponentScore}
+            Span #{score[0]} / #{score[1]}
       `
       }
     }
@@ -97,10 +89,6 @@ export default observer(function GameResult ({ gameId }) {
     })
   }, [stringifyRounds])
 
-  // const opponentName = (isProfessor ? playerName : professor.name) || 'Unknown player'
-  const firstPlayerName = players[0] && players[0].name || 'Unknown'
-  const secondPlayerName = (players[1] && players[1].name) || 'Unknown'
-console.info("__firstPlayerName__", firstPlayerName)
   return pug`
     Div.root
       Collapse(open=open onChange=() => setOpen(!open))
