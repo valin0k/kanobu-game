@@ -1,13 +1,12 @@
 import React from 'react'
-import { observer, useSession, $root, useQuery, useDoc } from 'startupjs'
-import { ScrollView, Text } from 'react-native'
-import { Button, H4, Span, Div, Avatar } from '@startupjs/ui'
+import { observer, useSession, $root, useQuery } from 'startupjs'
+import { Button, H4, Div, Avatar } from '@startupjs/ui'
 import { GameResult } from 'components'
 import './index.styl'
 
 export default observer(function ClosedGameList () {
   const [userId] = useSession('userId')
-  const [games, $games] = useQuery('games', {
+  const [games] = useQuery('games', {
     open: false,
     $or: [
       {
@@ -16,7 +15,7 @@ export default observer(function ClosedGameList () {
         ],
       },
       { professor: userId },
-      {userIds: {$in: [userId]}}
+      { userIds: { $in: [userId] } }
     ]
   })
 
@@ -24,7 +23,7 @@ export default observer(function ClosedGameList () {
 
   return pug`
     Div.root
-      H4  Closed games list
+      H4 Closed games list
       Div.games
         each game in games
           GameResult(gameId=game.id key=game.id)

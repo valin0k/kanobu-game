@@ -1,22 +1,14 @@
 import React from 'react'
-import {
-  observer,
-  useDoc,
-  useSession,
-  useValue,
-  $root
-} from 'startupjs'
+import { observer, useSession, useValue, $root } from 'startupjs'
+import { Div, Button, TextInput, Span } from '@startupjs/ui'
 import './index.styl'
-import { Div, Button, H3, TextInput, Span } from '@startupjs/ui'
 
-export default observer(function TestComponent ({ style }) {
-  const [userName, $userName] = useSession('userName')
+export default observer(function TestComponent () {
   const [userId, $userId] = useSession('userId')
   const [nameValue, $nameValue] = useValue('')
 
   async function onSubmit() {
     if(!nameValue) return
-
     await $root.scope('users').addUser({name: nameValue, id: userId })
   }
 
