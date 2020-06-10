@@ -1,7 +1,7 @@
 import React from 'react'
 import { observer, useSession, useDoc } from 'startupjs'
 import { ScrollView } from 'react-native'
-import { AuthForm, NewGame, GameList, ClosedGameList } from 'main/components'
+import { AuthForm, NewGame, GameList, ClosedGameList, LeaderBoard } from 'main/components'
 import { Div, Span } from '@startupjs/ui'
 import './index.styl'
 
@@ -18,6 +18,7 @@ export default observer(function PHome () {
             NewGame
             GameList
             ClosedGameList
+            LeaderBoard
           else
             AuthForm
   `
