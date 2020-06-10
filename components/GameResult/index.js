@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import {observer, useSession, useQueryDoc, useDoc} from 'startupjs'
+import {observer, useSession, useQueryDoc, useDoc, useQuery} from 'startupjs'
 import { ScrollView, Text } from 'react-native'
 import { Button, Avatar, Div, Span, Collapse, Icon } from '@startupjs/ui'
 import { Table } from 'components'
@@ -22,19 +22,36 @@ const ICON_COLOR = '#444'
 export default observer(function GameResult ({ gameId }) {
   const [open, setOpen] = useState(false)
   const [userId] = useSession('userId')
-  const [user] = useQueryDoc('users', { sessionUserId: userId })
   const [game] = useDoc('games', gameId)
-  const [professor] = useQueryDoc('users', {_id: game.professor})
-  const isProfessor = professor.id === user.id
+
+  const userIds = useMemo(() => {
+    const ids = [...game.userIds]
+    ids.push(userId)
+    return ids.filter(Boolean)
+  }, [JSON.stringify(game.userIds)])
+
+  const [users] = useQuery('users', { _id: { $in: userIds } })
+  const isProfessor = userId === game.professor
+  const players = useMemo(() => {
+    return users.filter(user => (game.userIds || []).includes(user.id))
+  }, [game.userIds.length])
+
+  const userIndex = useMemo(() => {
+    return game.userIds.findIndex(id => id === userId)
+  }, [])
+
+  // const [user] = useQueryDoc('users', { sessionUserId: userId })
+  // const [professor] = useQueryDoc('users', {_id: game.professor})
+  // const isProfessor = professor.id === user.id
   const stringifyRounds = JSON.stringify(game.rounds)
-  const opponentId = isProfessor ? professor.id : game.opponent
-  const opponent = useQueryDoc('users', {_id: game.opponent})
-  const playerName = useMemo(() => {
-    if(Array.isArray(opponent)) {
-      return opponent[0] ? opponent[0].name : ''
-    }
-    return opponent ? opponent.name : ''
-  }, [opponent])
+  // const opponentId = isProfessor ? professor.id : game.opponent
+  // const opponent = useQueryDoc('users', {_id: game.opponent})
+  // const playerName = useMemo(() => {
+  //   if(Array.isArray(opponent)) {
+  //     return opponent[0] ? opponent[0].name : ''
+  //   }
+  //   return opponent ? opponent.name : ''
+  // }, [opponent])
 
   const columns = [
     {
@@ -80,26 +97,36 @@ export default observer(function GameResult ({ gameId }) {
     })
   }, [stringifyRounds])
 
-  const opponentName = (isProfessor ? playerName : professor.name) || 'Unknown player'
+  // const opponentName = (isProfessor ? playerName : professor.name) || 'Unknown player'
+  const firstPlayerName = players[0] && players[0].name || 'Unknown'
+  const secondPlayerName = (players[1] && players[1].name) || 'Unknown'
+console.info("__firstPlayerName__", firstPlayerName)
   return pug`
     Div.root
       Collapse(open=open onChange=() => setOpen(!open))
         CollapseHeader
-          if !game.open && game.cause
-            - const lose = game.cause.userId === user.id
-            Span=lose ? 'You surrendered' : 'Your opponent ' + opponentName +  ' surrendered'
+          if !game.open && game.cause && !isProfessor
+            - const lose = game.cause.userId === userId
+            Span=lose ? 'You surrendered' : 'Your opponent surrendered'
+          else if !game.open && game.cause && isProfessor
+            - const isFirstPlayerLose = players[0].id === game.cause.userId
+            Span=isFirstPlayerLose ? firstPlayerName + ' surrendered' : secondPlayerName + ' surrendered'
           else if !game.open
             - const lastRound = game.scores[game.scores.length - 1]
             - const draw = game.scores[lastRound[0]] === game.scores[lastRound[1]]
-            - const isProfWin = game.scores[lastRound[0]] > game.scores[lastRound[1]]
+            - const isFirstPlayerWin = game.scores[lastRound[0]] > game.scores[lastRound[1]]
             if draw
-              Span Draw vs #{opponentName}
-            else if (isProfWin && isProfessor) || (!isProfWin && !isProfessor)
-              Span You won #{opponentName}
+              Span Draw
+            else if isProfessor
+              Span=isFirstPlayerWin ? firstPlayerName + ' win ' + secondPlayerName : secondPlayerName +  ' win ' + firstPlayerName
+            else if (userIndex === 0 && isFirstPlayerWin) || (userIndex === 1 && !isFirstPlayerWin)
+              Span You won
             else
-              Span You lost #{opponentName}
+              Span You lost
+          else if game.userIds.length < 2
+            Span Waiting for players
           else
-            Span You are playing vs #{opponentName}
+            Span Game in progress
         CollapseContent
           Table(columns=columns dataSource=data)
   `

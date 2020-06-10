@@ -16,23 +16,25 @@ const ACTIONS = [
 export default observer(function PGame ({match: {params: {gameId}}}) {
   const [userId] = useSession('userId')
   const [game, $game] = useDoc('games', gameId)
-  const userIds = useMemo(() => {
-    const ids = [...game.userIds]
-    ids.push(userId)
-    return ids.filter(Boolean)
-  }, [JSON.stringify(game.userIds)])
-  const [users] = useQuery('users', { _id: { $in: userIds } })
-  const professor = users.find(user => user.id === userId)
+  // const userIds = useMemo(() => {
+  //   const ids = [...game.userIds]
+  //   ids.push(userId)
+  //   return ids.filter(Boolean)
+  // }, [JSON.stringify(game.userIds)])
+  const [users] = useQuery('users', { _id: { $in: game.userIds } })
+  const userIndex = useMemo(() => {
+    return game.userIds.findIndex(id => id === userId)
+  }, [])
+  // const professor = users.find(user => user.id === userId)
 
-  const isProfessor = user.id === game.professor
+  const isProfessor = userId === game.professor
   const gameRounds = game.rounds
   const stringifyRounds = JSON.stringify(gameRounds)
-
 
   const selectedAction = useMemo(() => {
     const lastRoundIndex = (gameRounds.length - 1) < 1 ? 0 : gameRounds.length - 1
     const lastRound = gameRounds[lastRoundIndex] || []
-    return lastRound[isProfessor ? 0 : 1]
+    return lastRound[userIndex]
   }, [stringifyRounds])
 
   const canStartNextRound = useMemo(() => {
@@ -44,23 +46,23 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   }, [stringifyRounds])
 
   useEffect(() => {
-    if(!user || !game) return
+    // if(!user || !game) return
 
     if(!isProfessor) {
-      joinGame(game.professor, user.id)
+      joinGame()
     }
   }, [])
 
   async function joinGame() {
-    await $root.scope('games').join({ gameId, userId: user.id })
+    await $root.scope('games').join({ gameId, userId })
   }
 
   async function onActionPress(action) {
-    await $root.scope('games').selectAction({gameId, isProfessor, action})
+    await $root.scope('games').selectAction({gameId, userIndex, action})
   }
 
   async function onSurrender() {
-    await $root.scope('games').surrender({ gameId, userId: user.id })
+    await $root.scope('games').surrender({ gameId, userId })
   }
 
   async function onNextRound() {
@@ -81,8 +83,8 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
         Button.goBack(onPress=goBack) Go back
       
       if game.open
-        if !game.opponent
-          Span.waitText(size='l') Waiting for your opponent
+        if !game.userIds.length < 2
+          Span.waitText(size='l') Waiting for players
         else
           Div.content
             Text.text Select your action
@@ -108,7 +110,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
 
       else
         if game.cause && game.cause.type === SURRENDER
-          Span.surrenderText(size='xxl')=game.cause.userId === user.id ? 'You lose' : 'Your opponent surrendered'
+          Span.surrenderText(size='xxl')=game.cause.userId === userId ? 'You lose' : 'Your opponent surrendered'
         
         
       Div.results

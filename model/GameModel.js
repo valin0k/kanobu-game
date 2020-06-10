@@ -41,7 +41,7 @@ export default class UserModel extends BaseModel {
     return true
   }
 
-  async selectAction({gameId, isProfessor, action}) {
+  async selectAction({gameId, userIndex, action}) {
     const $game = this.scope(`games.${gameId}`)
     await this.root.subscribe($game)
     const rounds = $game.get('rounds')
@@ -49,7 +49,7 @@ export default class UserModel extends BaseModel {
     const lastIndex = (rounds.length - 1) < 1 ? 0 : rounds.length - 1
     const beforeLastRound = rounds[lastIndex - 1] || []
     const lastRound = rounds[lastIndex] || []
-    lastRound[isProfessor ? 0 : 1] = action
+    lastRound[userIndex] = action
     if((lastRound[0] || lastRound[1]) || (!beforeLastRound[0] || !beforeLastRound[1])) {
       rounds[lastIndex] = lastRound
     } else {
