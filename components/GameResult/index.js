@@ -82,8 +82,8 @@ export default observer(function GameResult ({ gameId }) {
   const data = useMemo(() => {
     return game.rounds.slice(0, -1).map((round, i) => {
       return {
-        you: isProfessor ? round[0] : round[1],
-        opponent: isProfessor ? round[1] : round[0],
+        first: round[0],
+        second: round[1],
         score: game.scores[i]
       }
     })

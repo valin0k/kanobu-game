@@ -16,11 +16,6 @@ const ACTIONS = [
 export default observer(function PGame ({match: {params: {gameId}}}) {
   const [userId] = useSession('userId')
   const [game, $game] = useDoc('games', gameId)
-  // const userIds = useMemo(() => {
-  //   const ids = [...game.userIds]
-  //   ids.push(userId)
-  //   return ids.filter(Boolean)
-  // }, [JSON.stringify(game.userIds)])
   const [users] = useQuery('users', { _id: { $in: game.userIds } })
   const userIndex = useMemo(() => {
     return game.userIds.findIndex(id => id === userId)
@@ -83,8 +78,15 @@ console.info("__game.userIds.length__", game.userIds.length)
         Button.goBack(onPress=goBack) Go back
       
       if game.open
-        if !game.userIds.length < 2
+        if game.userIds.length < 2
           Span.waitText(size='l') Waiting for players
+        else if isProfessor
+          Div.profButtons
+            Div.buttonWrapper(styleName={first: true})
+              Button.button(onPress=onFinishGame) Finish game
+            if canStartNextRound
+              Div.buttonWrapper
+                Button.button(onPress=onNextRound) Next round
         else
           Div.content
             Text.text Select your action
