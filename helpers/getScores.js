@@ -12,16 +12,14 @@ const ACTIONS = [
 ]
 
 export default function getScores (user1, user2) {
-  console.info("__user1__", user1)
-  console.info("__user2__", user2)
   const answersLength = Math.min(user1.answers.length, user2.answers.length)
 
-  const getWinnersByRound = Array(answersLength).fill(1).map((_, i) => {
+  const resultsByRound = Array(answersLength).fill(1).map((_, i) => {
     return _whoWin(user1.answers[i], user2.answers[i])
   })
 
-  
-
+  const aaaa = getScoresByRound(resultsByRound)
+console.info("__aaaa__", aaaa)
 
   console.info("__getWinnersByRound__", getWinnersByRound)
 }
@@ -38,23 +36,32 @@ function _whoWin(user1Answer, user2Answer) {
   }
 }
 
-// function getScoreSeries() {
-//   return roundsBeforeCurrent.reduceRight((acc, round) => {
-//     const roundWinner = whoWin(round)
-//     const skip = { series: acc.series, currentWinner: 'skip' }
-//
-//     if(roundWinner !== winner && roundWinner !== DRAW) return skip
-//     if(acc.currentWinner === 'skip') return skip
-//
-//     if(roundWinner === DRAW) {
-//       return acc
-//     } else if (roundWinner === 1 && (acc.currentWinner === 'no' || acc.currentWinner === 1)) {
-//       acc = {series: acc.series + 1, currentWinner: 1}
-//       return acc
-//     } else if (!roundWinner && (acc.currentWinner === 'no' || acc.currentWinner === 0)) {
-//       acc = {series: acc.series + 1, currentWinner: 0}
-//       return acc
-//     }
-//     return acc
-//   }, { series: 0, currentWinner: 'no' })
-// }
+function getScoresByRound (resultsByRound) {
+  return resultsByRound.reduce((acc, result, i) => {
+    if(result === 0) {
+      const plusScore = getScoreBySeries(acc.currentWinner === 0 ? acc.series + 1 : acc.series)
+      const result = [acc.result[i][0] ? acc.result[i][0] + plusScore : plusScore, acc.result[1] || 0]
+      return {series: acc.series + 1, currentWinner: 0, result}
+    } else if (result === 1) {
+      const plusScore = getScoreBySeries(acc.currentWinner === 1 ? acc.series + 1 : acc.series)
+      const result = [acc.result[i][0] ? acc.result[i][0] + plusScore : plusScore, acc.result[1] || 0]
+      return {series: acc.series + 1, currentWinner: 0, result}
+    } else {
+      const lastResult = acc.result[acc.result.length - 1] || [0, 0]
+      acc.result.push(lastResult)
+      return acc
+    }
+    return acc
+  }, {series: 0, currentWinner: -1, result: []})
+}
+
+function getScoreBySeries (series) {
+  return Array(series).fill(1).reduce((acc, _, i) => {
+    if(!i) {
+      acc = acc + (i + 1)
+    } else {
+      acc += i
+    }
+    return acc
+  }, 1)
+}
