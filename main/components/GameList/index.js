@@ -7,7 +7,8 @@ import './index.styl'
 export default observer(function GameList () {
   const [userId] = useSession('userId')
   const [userPlayers] = useQuery('players', { userId })
-  const playerIds = userPlayers.map(player => player.userId)
+  const playerIds = userPlayers.map(player => player.id)
+
   const [games, $games] = useQuery('games', {
     open: true,
     $or: [
