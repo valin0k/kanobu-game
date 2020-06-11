@@ -108,10 +108,7 @@ export default observer(function GameResult ({ gameId }) {
     Div.root
       Collapse(open=open onChange=() => setOpen(!open))
         CollapseHeader
-          if !game.open && game.cause && !isProfessor
-            - const lose = game.cause.userId === userId
-            Span=lose ? 'You surrendered' : 'Your opponent surrendered'
-          else if !game.open && game.cause && isProfessor
+          if !game.open && game.cause
             - const isFirstPlayerLose = players[0].id === game.cause.userId
             Span=isFirstPlayerLose ? firstPlayerName + ' surrendered' : secondPlayerName + ' surrendered'
           else if !game.open
