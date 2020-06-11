@@ -18,10 +18,8 @@ export default function getScores (user1, user2) {
     return _whoWin(user1.answers[i], user2.answers[i])
   })
 
-  const aaaa = getScoresByRound(resultsByRound)
-console.info("__aaaa__", aaaa)
+  return getScoresByRound(resultsByRound)
 
-  console.info("__getWinnersByRound__", getWinnersByRound)
 }
 
 function _whoWin(user1Answer, user2Answer) {
@@ -38,21 +36,41 @@ function _whoWin(user1Answer, user2Answer) {
 
 function getScoresByRound (resultsByRound) {
   return resultsByRound.reduce((acc, result, i) => {
+    console.info("__acc.result__", acc.result)
+    let lastResult = acc.result[acc.result.length ? acc.result.length - 1 : acc.result.length] || [0, 0]
+
+    console.info("__lastResult__", lastResult)
+    if(result === DRAW) {
+      console.info("__0__", acc)
+      acc.result.push(lastResult)
+      return acc
+    } else if(acc.currentWinner === result) {
+      acc.series += 1
+      console.info("__1__", acc)
+    } else {
+      acc.series = 1
+      acc.currentWinner = result
+      console.info("__2__", acc)
+    }
+
+    const plusScore = getScoreBySeries(acc.series)
+
     if(result === 0) {
-      const plusScore = getScoreBySeries(acc.currentWinner === 0 ? acc.series + 1 : acc.series)
-      const result = [acc.result[i][0] ? acc.result[i][0] + plusScore : plusScore, acc.result[1] || 0]
-      return {series: acc.series + 1, currentWinner: 0, result}
+      console.info("__4__", acc)
+      acc.result.push([lastResult[0] + plusScore, lastResult[1]])
+      return acc
     } else if (result === 1) {
-      const plusScore = getScoreBySeries(acc.currentWinner === 1 ? acc.series + 1 : acc.series)
-      const result = [acc.result[i][0] ? acc.result[i][0] + plusScore : plusScore, acc.result[1] || 0]
-      return {series: acc.series + 1, currentWinner: 0, result}
+      acc.result.push([lastResult[0], lastResult[1] + plusScore])
+      console.info("__5__", acc)
+      return acc
     } else {
       const lastResult = acc.result[acc.result.length - 1] || [0, 0]
       acc.result.push(lastResult)
+      console.info("__6__", acc)
       return acc
     }
     return acc
-  }, {series: 0, currentWinner: -1, result: []})
+  }, {series: 0, currentWinner: -1, result: []}).result
 }
 
 function getScoreBySeries (series) {
@@ -63,5 +81,5 @@ function getScoreBySeries (series) {
       acc += i
     }
     return acc
-  }, 1)
+  }, 0)
 }
