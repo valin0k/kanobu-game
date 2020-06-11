@@ -6,16 +6,13 @@ import './index.styl'
 
 export default observer(function ClosedGameList () {
   const [userId] = useSession('userId')
+  const [userPlayers] = useQuery('players', { userId })
+  const playerIds = userPlayers.map(player => player.userId)
   const [games] = useQuery('games', {
     open: false,
     $or: [
-      {
-        $nor: [
-          { userIds: { $size: 2 } },
-        ],
-      },
       { profId: userId },
-      { userIds: { $in: [userId] } }
+      { playerIds: { $in: playerIds } }
     ]
   })
 

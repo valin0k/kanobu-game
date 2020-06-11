@@ -1,12 +1,10 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { View, Text, TouchableOpacity } from 'react-native'
 import { observer } from 'startupjs'
 import { Icon } from '@startupjs/ui'
 import './index.styl'
 
 export default observer(function ({ dataSource, columns, align, shadow }) {
-  const [sort, setSort] = useState({})
-
   return pug`
     View.table(styleName={ shadow } style={alignSelf: align})
       View.header
@@ -19,19 +17,9 @@ export default observer(function ({ dataSource, columns, align, shadow }) {
               if column.onHeaderPress
                 View(key=column.key)
                   TouchableOpacity.columnTextIcon(
-                    onPress= () => {
-                      const sortData = {
-                        field: column.key,
-                        value: sort.field===column.key ? -sort.value : 1
-                      }
-                      setSort(sortData)
-                      column.onHeaderPress(sortData.field, sortData.value)
-                    }
-                    styleName=(sort.field===column.key ? 'fieldActive' : '' )
+                    onPress= () => { }
                   )
                     Text= column.title
-                    if sort.field === column.key
-                      Icon.icon(name=(sort.value===1 ? 'arrow-up' : 'arrow-down') size='xs')
               else
                 Text= column.title
 

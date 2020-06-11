@@ -38,10 +38,6 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   const canStartNextRound = isProfessor
     && players.length === 2
     &&  players.every(player => player.answers.length === currentRound)
-  //
-  // async function joinGame() {
-  //   await $root.scope('games').join({ gameId, userId })
-  // }
 
   async function onActionPress(action) {
     const playerId = myPlayer.id
