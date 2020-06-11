@@ -11,11 +11,11 @@ export default observer(function GameList () {
     $or: [
       {
         $nor: [
-          { userIds: { $size: 2 } },
+          { playerIds: { $size: 2 } },
         ],
       },
       { profId: userId },
-      {userIds: {$in: [userId]}}
+      {playerIds: {$in: [userId]}}
     ]
   })
 

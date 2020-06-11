@@ -17,6 +17,10 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   const [userId] = useSession('userId')
   const [game, $game] = useDoc('games', gameId)
   const [players] = useQuery('players', { _id: { $in: game.playerIds } })
+
+  const myPlayer = useMemo(() => {
+    return players.find(player => player.userId === userId)
+  }, [])
   console.info("__players__", players)
   // const userIndex = useMemo(() => {
   //   return game.userIds.findIndex(id => id === userId)
@@ -26,41 +30,36 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   const currentRound = game.currentRound
 
   const selectedAction = useMemo(() => {
-    return ''
+    if(!myPlayer) return
+
+    if(myPlayer.answers.length >= game.currentRound) {
+      return myPlayer.answers[myPlayer.answers.length - 1]
+    }
+
+    return false
     // const lastRoundIndex = (gameRounds.length - 1) < 1 ? 0 : gameRounds.length - 1
     // const lastRound = gameRounds[lastRoundIndex] || []
     // return lastRound[userIndex]
-  }, [currentRound])
+  }, [currentRound, myPlayer && myPlayer.answers.length])
 
   const canStartNextRound = useMemo(() => {
-    if(!isProfessor) return false
+    if(!isProfessor || players.length < 2) return false
 
-    return true
-    // const lastRoundIndex = (gameRounds.length - 1) < 1 ? 0 : gameRounds.length - 1
-    // const lastRound = gameRounds[lastRoundIndex] || []
-    // return lastRound[0] && lastRound[1]
+    return players.every(player =>  player.answers.length === currentRound)
   }, [currentRound])
-
-  useEffect(() => {
-    if(!isProfessor) {
-      joinGame()
-    }
-  }, [])
 
   async function joinGame() {
     await $root.scope('games').join({ gameId, userId })
   }
 
   async function onActionPress(action) {
-    const playerId = players.find(player => player.userId === userId).id
-
+    const playerId = myPlayer.id
     await $root.scope('players').addAnswer({ answer: action, playerId })
-
-    // await $root.scope('games').selectAction({gameId, userIndex, action})
   }
 
   async function onSurrender() {
-    await $root.scope('games').surrender({ gameId, userId })
+    const playerId = myPlayer.id
+    await $root.scope('games').surrender({ gameId, playerId })
   }
 
   async function onNextRound() {
@@ -75,6 +74,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
     emit('url', '/')
   }
 
+
   return pug`
     Div.root
       Div.backButton
@@ -82,7 +82,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
       
       if game.open
         if game.playerIds.length < 2
-          Span.waitText(size='l') Waiting for players
+          Span.waitText(size='l') Waiting for #{2 - game.playerIds.length} more player#{!game.playerIds.length && 's'}
         else if isProfessor
           Div.profButtons
             Div.buttonWrapper(styleName={first: true})

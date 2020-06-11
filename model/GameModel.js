@@ -19,7 +19,7 @@ export default class UserModel extends BaseModel {
       ...data,
       createdAt: Date.now(),
       open: true,
-      currentRound: 0,
+      currentRound: 1,
       // scores: [[0, 0]],
       playerIds: [],
       id
@@ -128,11 +128,11 @@ export default class UserModel extends BaseModel {
     return true
   }
 
-  async surrender({ gameId, userId }) {
+  async surrender({ gameId, playerId }) {
     const $game = this.scope(`games.${gameId}`)
     await this.root.subscribe($game)
     $game.set('open', false)
-    $game.set('cause', { type: SURRENDER, userId: userId })
+    $game.set('cause', { type: SURRENDER, playerId })
 
     return true
   }
