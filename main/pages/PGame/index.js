@@ -21,10 +21,6 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   const myPlayer = useMemo(() => {
     return players.find(player => player.userId === userId)
   }, [])
-  console.info("__players__", players)
-  // const userIndex = useMemo(() => {
-  //   return game.userIds.findIndex(id => id === userId)
-  // }, [])
 
   const isProfessor = userId === game.profId
   const currentRound = game.currentRound
@@ -42,10 +38,10 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
   const canStartNextRound = isProfessor
     && players.length === 2
     &&  players.every(player => player.answers.length === currentRound)
-
-  async function joinGame() {
-    await $root.scope('games').join({ gameId, userId })
-  }
+  //
+  // async function joinGame() {
+  //   await $root.scope('games').join({ gameId, userId })
+  // }
 
   async function onActionPress(action) {
     const playerId = myPlayer.id
@@ -92,7 +88,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
               each action, i in ACTIONS
                 - const selected = selectedAction === action.type
                 Div.action(
-                  styleName={first: !i}
+                  styleName={first: !i, active: selected}
                   onPress=() => !selectedAction && onActionPress(action.type) 
                   key=action.type 
                   disabled=selectedAction
@@ -110,9 +106,12 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
 
       else
         if game.cause && game.cause.type === SURRENDER
-          Span.surrenderText(size='xxl')=game.cause.playerId === myPlayer.id ? 'You lose' : 'Your opponent surrendered'
-
-      // Div.results
-      //   GameResult(gameId=game.id)
+          if isProfessor
+            Span.surrenderText(size='xxl') Player surrendered
+          else
+            Span.surrenderText(size='xxl')=game.cause.playerId === myPlayer.id ? 'You lose' : 'Your opponent surrendered'
+        
+      Div.results
+        GameResult(gameId=game.id)
   `
 })

@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react'
 import { observer, useSession, useDoc, useQuery } from 'startupjs'
 import { Div, Span, Collapse, Icon } from '@startupjs/ui'
 import { Table } from 'components'
+import getScores from 'helpers/getScores'
 import { faCube, faCut, faScroll } from "@fortawesome/free-solid-svg-icons"
 import { CUT, PAPER, STONE } from "model/GameModel"
 import './index.styl'
@@ -94,23 +95,17 @@ export default observer(function GameResult ({ gameId }) {
   const data = useMemo(() => {
     const firstPlayer = getPlayer(users, game.playerIds[0])
     const secondPlayer = getPlayer(users, game.playerIds[1])
-
+    const a = getScores(firstPlayer, secondPlayer)
+console.info("__a__", a)
     return Array(currentRound).fill(1).map((_, i) => {
-      console.info("__firstPlayer.answers__", firstPlayer.answers)
+      
+      
       return {
         first: firstPlayer.answers[i],
         second: secondPlayer.answers[i],
         score: [1,2]
       }
     })
-
-    // return game.rounds.slice(0, -1).map((round, i) => {
-    //   return {
-    //     first: round[0],
-    //     second: round[1],
-    //     score: game.scores[i]
-    //   }
-    // })
   }, [currentRound])
 
   return pug`

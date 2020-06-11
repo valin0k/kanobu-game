@@ -1,17 +1,18 @@
 import React, { useMemo } from 'react'
-import { observer, useSession, $root, useDoc, emit } from 'startupjs'
+import { observer, useSession, $root, useDoc, useQueryDoc, emit } from 'startupjs'
 import { Button, Avatar, Div, Span } from '@startupjs/ui'
 import './index.styl'
 
 export default observer(function GameListItem ({ gameId }) {
   const [userId] = useSession('userId')
   const [game] = useDoc('games', gameId)
+  const [isPlayer] = useQueryDoc('players', { gameId, userId })
   const [professor] = useDoc('users', game.profId)
 
   const inGame = useMemo(() => {
-    const userIds = game.userIds || []
-    return userIds.includes(userId) || game.profId === userId
-  }, [JSON.stringify(game.userIds)])
+    const playerIds = game.playerIds || []
+    return isPlayer || game.profId === userId
+  }, [JSON.stringify(game.playerIds)])
 
   async function joinGame() {
     if(!inGame) {
