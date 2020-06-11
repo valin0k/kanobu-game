@@ -13,10 +13,7 @@ export default class PlayerModel extends BaseModel {
   }
 
   async addAnswer ({ answer, playerId }) {
-    console.info("__playerId__", playerId)
-    // const playerId = this.getId()
     const $player = this.scope(`players.${playerId}`)
-    // await this.root.subscribe($player)
 
     $player.push('answers', answer)
   }

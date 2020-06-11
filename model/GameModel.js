@@ -20,7 +20,6 @@ export default class UserModel extends BaseModel {
       createdAt: Date.now(),
       open: true,
       currentRound: 1,
-      // scores: [[0, 0]],
       playerIds: [],
       id
     })
@@ -38,93 +37,6 @@ export default class UserModel extends BaseModel {
       $game.push('playerIds', playerId)
     }
 
-    return true
-  }
-
-  async selectAction({gameId, userIndex, action}) {
-    const $game = this.scope(`games.${gameId}`)
-    await this.root.subscribe($game)
-    const rounds = $game.get('rounds')
-
-    const lastIndex = (rounds.length - 1) < 1 ? 0 : rounds.length - 1
-    const beforeLastRound = rounds[lastIndex - 1] || []
-    const lastRound = rounds[lastIndex] || []
-    lastRound[userIndex] = action
-    if((lastRound[0] || lastRound[1]) || (!beforeLastRound[0] || !beforeLastRound[1])) {
-      rounds[lastIndex] = lastRound
-    } else {
-      rounds.push(lastRound)
-    }
-
-    if(lastRound[0] && lastRound[1]) {
-      calculateScores()
-    }
-
-    function calculateScores() {
-      const scores = $game.get('scores') || [[0, 0]]
-      const lastRoundScores = scores[scores.length - 1] || [0, 0]
-      const scoresBeforeCurrent = scores.slice(0, -1)
-      const roundsBeforeCurrent = rounds.slice(0, -1)
-
-      const winner = whoWin(lastRound)
-      const scoreSeries = roundsBeforeCurrent.reduceRight((acc, round) => {
-        const roundWinner = whoWin(round)
-        const skip = { series: acc.series, currentWinner: 'skip' }
-
-        if(roundWinner !== winner && roundWinner !== DRAW) return skip
-        if(acc.currentWinner === 'skip') return skip
-
-        if(roundWinner === DRAW) {
-          return acc
-        } else if (roundWinner === 1 && (acc.currentWinner === 'no' || acc.currentWinner === 1)) {
-          acc = {series: acc.series + 1, currentWinner: 1}
-          return acc
-        } else if (!roundWinner && (acc.currentWinner === 'no' || acc.currentWinner === 0)) {
-          acc = {series: acc.series + 1, currentWinner: 0}
-          return acc
-        }
-        return acc
-      }, { series: 0, currentWinner: 'no' })
-
-      let plusScore = Array(scoreSeries.series).fill(1).reduce((acc, _, i) => {
-        if(!i) {
-          acc = acc + (i + 1)
-        } else {
-          acc += i
-        }
-        return acc
-      }, 1)
-
-      plusScore = plusScore > 1 ? plusScore - 1 : plusScore
-      const beforeLastIndex = lastIndex ? scores[lastIndex - 1] : scores[lastIndex]
-
-      if(!winner) {
-        scores[lastIndex] = [beforeLastIndex[0] + plusScore, beforeLastIndex[1]]
-        $game.set('scores', scores)
-      } else if(winner === 1) {
-        scores[lastIndex] = [beforeLastIndex[0], beforeLastIndex[1] + plusScore]
-        $game.set('scores', scores)
-      } else if(winner === DRAW) {
-        scores[lastIndex] = [beforeLastIndex[0], beforeLastIndex[1]]
-        $game.set('scores', scores)
-      }
-    }
-
-    function whoWin(lastRound) {
-      const firstPlayer = lastRound[0]
-      const secondPlayer = lastRound[1]
-      if(firstPlayer === secondPlayer) return DRAW
-
-      for(let action of ACTIONS) {
-        if(action.type === firstPlayer && action.beat === secondPlayer) {
-          return 0
-        } else if(action.type === secondPlayer && action.beat === firstPlayer) {
-          return 1
-        }
-      }
-    }
-
-    $game.set('rounds', rounds)
     return true
   }
 
