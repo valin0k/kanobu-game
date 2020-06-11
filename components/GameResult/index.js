@@ -22,26 +22,40 @@ export default observer(function GameResult ({ gameId }) {
   const [open, setOpen] = useState(false)
   const [userId] = useSession('userId')
   const [game] = useDoc('games', gameId)
+  const [players] = useQuery('players', { gameId })
 
   const userIds = useMemo(() => {
-    const ids = [...game.userIds]
+    const ids = players.map(player => player.userId)
     ids.push(userId)
     return ids.filter(Boolean)
-  }, [JSON.stringify(game.userIds)])
+  }, [JSON.stringify(game.playerIds)])
 
   const [users] = useQuery('users', { _id: { $in: userIds } })
+
+  const currentRound = game.currentRound
   const isProfessor = userId === game.profId
 
-  const players = users.filter(user => (game.userIds || []).includes(user.id))
+  // const players = users.filter(user => (game.playerIds || []).includes(user.id))
 
   const userIndex = useMemo(() => {
-    return game.userIds.findIndex(id => id === userId)
+    return game.playerIds.findIndex(id => id === userId)
   }, [])
 
-  const firstPlayerName = players[0] && players[0].name || '-'
-  const secondPlayerName = (players[1] && players[1].name) || '-'
+  function getPlayer(users, playerId) {
+    return players.find(p => p.id === playerId)
+  }
 
-  const stringifyRounds = JSON.stringify(game.rounds)
+  function getName(users, playerId) {
+    const player = players.find(p => p.id === playerId)
+    const user = player && users.find(user => user.id === player.userId)
+    return user && user.name
+  }
+
+
+  const firstPlayerName = getName(users, game.playerIds[0]) || '-'
+  const secondPlayerName = getName(users, game.playerIds[1]) || '-'
+
+  // const stringifyRounds = JSON.stringify(game.rounds)
 
   const columns = [
     {
@@ -67,25 +81,37 @@ export default observer(function GameResult ({ gameId }) {
       key: 'score',
       dataIndex: 'score',
       render: ({ score }) => {
-        const yourScore = isProfessor ? score[0] : score[1]
-        const opponentScore = isProfessor ? score[1] : score[0]
+        // const yourScore = isProfessor ? score[0] : score[1]
+        // const opponentScore = isProfessor ? score[1] : score[0]
         return pug`
           Div.field
-            Span #{score[0]} / #{score[1]}
+            Span 1
       `
       }
     }
   ]
 
   const data = useMemo(() => {
-    return game.rounds.slice(0, -1).map((round, i) => {
+    const firstPlayer = getPlayer(users, game.playerIds[0])
+    const secondPlayer = getPlayer(users, game.playerIds[1])
+
+    return Array(currentRound).fill(1).map((_, i) => {
+      console.info("__firstPlayer.answers__", firstPlayer.answers)
       return {
-        first: round[0],
-        second: round[1],
-        score: game.scores[i]
+        first: firstPlayer.answers[i],
+        second: secondPlayer.answers[i],
+        score: [1,2]
       }
     })
-  }, [stringifyRounds])
+
+    // return game.rounds.slice(0, -1).map((round, i) => {
+    //   return {
+    //     first: round[0],
+    //     second: round[1],
+    //     score: game.scores[i]
+    //   }
+    // })
+  }, [currentRound])
 
   return pug`
     Div.root
@@ -109,7 +135,7 @@ export default observer(function GameResult ({ gameId }) {
               Span You won
             else
               Span You lost
-          else if game.userIds.length < 2
+          else if game.playerIds.length < 2
             Span Waiting for players
           else
             Span Game in progress

@@ -37,16 +37,11 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
     }
 
     return false
-    // const lastRoundIndex = (gameRounds.length - 1) < 1 ? 0 : gameRounds.length - 1
-    // const lastRound = gameRounds[lastRoundIndex] || []
-    // return lastRound[userIndex]
   }, [currentRound, myPlayer && myPlayer.answers.length])
 
-  const canStartNextRound = useMemo(() => {
-    if(!isProfessor || players.length < 2) return false
-
-    return players.every(player =>  player.answers.length === currentRound)
-  }, [currentRound])
+  const canStartNextRound = isProfessor
+    && players.length === 2
+    &&  players.every(player => player.answers.length === currentRound)
 
   async function joinGame() {
     await $root.scope('games').join({ gameId, userId })
@@ -115,7 +110,7 @@ export default observer(function PGame ({match: {params: {gameId}}}) {
 
       else
         if game.cause && game.cause.type === SURRENDER
-          Span.surrenderText(size='xxl')=game.cause.userId === userId ? 'You lose' : 'Your opponent surrendered'
+          Span.surrenderText(size='xxl')=game.cause.playerId === myPlayer.id ? 'You lose' : 'Your opponent surrendered'
 
       // Div.results
       //   GameResult(gameId=game.id)
