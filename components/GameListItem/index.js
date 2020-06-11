@@ -14,7 +14,11 @@ export default observer(function GameListItem ({ gameId }) {
   }, [JSON.stringify(game.userIds)])
 
   async function joinGame() {
-    !inGame && await $root.scope('games').join({ gameId, userId })
+    if(!inGame) {
+      const playerId = await $root.scope('players').addPlayer({ gameId, userId })
+      await $root.scope('games').join({ gameId, playerId })
+    }
+
     emit('url', `/game/${gameId}`)
   }
 

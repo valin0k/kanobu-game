@@ -19,23 +19,23 @@ export default class UserModel extends BaseModel {
       ...data,
       createdAt: Date.now(),
       open: true,
-      rounds: [],
-      scores: [[0, 0]],
-      userIds: [],
+      currentRound: 0,
+      // scores: [[0, 0]],
+      playerIds: [],
       id
     })
     return id
   }
 
-  async join({gameId, userId}) {
+  async join({gameId, playerId}) {
     const $game = this.scope(`games.${gameId}`)
     await this.root.subscribe($game)
 
     const professorId = $game.get('profId')
-    const userIds = $game.get('userIds')
+    const playerIds = $game.get('playerIds')
 
-    if(professorId !== userId && !userIds.includes(userId)) {
-      $game.push('userIds', userId)
+    if(!playerIds.includes(playerId)) {
+      $game.push('playerIds', playerId)
     }
 
     return true
@@ -140,11 +140,8 @@ export default class UserModel extends BaseModel {
   async nextRound({ gameId }) {
     const $game = this.scope(`games.${gameId}`)
     await this.root.subscribe($game)
-    const rounds = $game.get('rounds')
-    const scores = $game.get('scores')
-
-    $game.push('rounds', [])
-    $game.push('scores', scores[scores.length - 1])
+    const currentRound = $game.get('currentRound')
+    $game.set('currentRound', currentRound + 1)
   }
 
   async finishGame({ gameId }) {
