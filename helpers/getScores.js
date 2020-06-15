@@ -1,25 +1,16 @@
-const DRAW = 'draw'
-export const PAPER = 'paper'
-export const STONE = 'stone'
-export const CUT = 'cut'
-
-const ACTIONS = [
-  { type: PAPER, beat: STONE },
-  { type: STONE, beat: CUT },
-  { type: CUT, beat: PAPER }
-]
+import { ACTIONS, DRAW, PAPER, STONE, CUT } from 'model/GameModel'
 
 export default function getScores (user1, user2) {
   const answersLength = Math.min(user1.answers.length, user2.answers.length)
 
   const resultsByRound = Array(answersLength).fill(1).map((_, i) => {
-    return _whoWin(user1.answers[i], user2.answers[i])
+    return whoWin(user1.answers[i], user2.answers[i])
   })
 
   return getScoresByRound(resultsByRound)
 }
 
-function _whoWin(user1Answer, user2Answer) {
+function whoWin(user1Answer, user2Answer) {
   if(user1Answer === user2Answer) return DRAW
 
   for(let action of ACTIONS) {
