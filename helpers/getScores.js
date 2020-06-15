@@ -1,5 +1,3 @@
-// import {ACTIONS, CUT, DRAW, PAPER, STONE} from "model/GameModel"
-
 const DRAW = 'draw'
 export const PAPER = 'paper'
 export const STONE = 'stone'
@@ -19,7 +17,6 @@ export default function getScores (user1, user2) {
   })
 
   return getScoresByRound(resultsByRound)
-
 }
 
 function _whoWin(user1Answer, user2Answer) {
@@ -67,10 +64,10 @@ function getScoresByRound (resultsByRound) {
 
 function getScoreBySeries (series) {
   return Array(series).fill(1).reduce((acc, _, i) => {
-    if(!i) {
-      acc = acc + (i + 1)
+    if(!i || i === 1) {
+      acc = acc + 1
     } else {
-      acc += i
+      acc = acc * 2
     }
     return acc
   }, 0)

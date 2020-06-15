@@ -25,16 +25,10 @@ export default observer(function GameResult ({ gameId }) {
   const [game] = useDoc('games', gameId)
   const [players] = useQuery('players', { gameId })
 
-  const userIds = useMemo(() => {
-    const ids = players.map(player => player.userId)
-    ids.push(userId)
-    return ids.filter(Boolean)
-  }, [JSON.stringify(game.playerIds)])
-
+  const userIds = players.map(player => player.userId).filter(Boolean)
   const [users] = useQuery('users', { _id: { $in: userIds } })
 
   const currentRound = game.currentRound
-  const isProfessor = userId === game.profId
 
   const data = useMemo(() => {
     if(game.playerIds.length < 2) return []
@@ -46,16 +40,12 @@ export default observer(function GameResult ({ gameId }) {
     const scores = getScores(firstPlayer, secondPlayer)
     return Array(currentRound).fill(1).map((_, i) => {
       return {
-        first: firstPlayer.answers[i],
-        second: secondPlayer.answers[i],
-        score: scores[i]
+        first: firstPlayer.answers[i] || '',
+        second: secondPlayer.answers[i] || '',
+        score: scores[i] ? scores[i][0] + ' / ' + scores[i][1] : null
       }
     })
   }, [currentRound])
-
-  const userIndex = useMemo(() => {
-    return game.playerIds.findIndex(id => id === userId)
-  }, [])
 
   function getPlayer(users, playerId) {
     return players.find(p => p.id === playerId)
@@ -67,7 +57,6 @@ export default observer(function GameResult ({ gameId }) {
     return user && user.name
   }
 
-
   const firstPlayerName = getName(users, game.playerIds[0]) || '-'
   const secondPlayerName = getName(users, game.playerIds[1]) || '-'
 
@@ -76,31 +65,16 @@ export default observer(function GameResult ({ gameId }) {
       title: firstPlayerName,
       key: 'first',
       dataIndex: 'first',
-      render: ({ first }) => pug`
-        Div.field
-          Icon(icon=ACTIONS[first] size=ICON_SIZE color=ICON_COLOR)  
-      `
     },
     {
       title: secondPlayerName,
       key: 'second',
       dataIndex: 'second',
-      render: ({ second }) => pug`
-        Div.field
-          Icon(icon=ACTIONS[second] size=ICON_SIZE color=ICON_COLOR)  
-      `
     },
     {
       title: 'Score',
       key: 'score',
       dataIndex: 'score',
-      render: ({ score }) => {
-        return pug`
-          Div.field
-            if score
-              Span #{score[0]} / #{score[1]}
-      `
-      }
     }
   ]
 
