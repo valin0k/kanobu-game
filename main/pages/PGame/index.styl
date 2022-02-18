@@ -1,0 +1,63 @@
+$color = #C1B7DF
+
+.root
+  padding 2u
+
+
+.text
+  font-weight bold
+  font-size 20px
+
+.actions
+  align-items center
+  margin-top 3u
+  +tablet()
+    flex-direction row
+
+.action
+  padding 3u
+  border-width 1u
+  border-color #36363c
+  border-radius 10u
+  margin-top 2u
+
+  +tablet()
+    margin-top 0
+    margin-left 2u
+
+  &.first
+    margin-top 0
+
+    +tablet()
+      margin-left 0
+
+  &.active
+    border-color tomato
+
+.backButton
+  flex-direction row
+
+.waitText
+  margin-top 2u
+
+.results
+  margin-top 2u
+
+.content
+  margin-top 2u
+
+.buttonWrapper
+  margin-top 2u
+  +tablet()
+    margin-top 0
+    margin-left 2u
+
+  &.first
+    margin-left 0
+
+.surrenderText
+  margin-top 2u
+
+.profButtons
+  margin-top 2u
+  flex-direction row

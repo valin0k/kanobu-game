@@ -5,8 +5,8 @@ export default (components = {}) => [
     component: components.PHome
   },
   {
-    path: '/about',
+    path: '/game/:gameId',
     exact: true,
-    component: components.PAbout
+    component: components.PGame
   }
 ]
