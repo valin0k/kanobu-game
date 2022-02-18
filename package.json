@@ -1,7 +1,7 @@
 {
   "name": "kanabu",
   "version": "0.0.1",
-  "private": true,
+  "private": false,
   "scripts": {
     "android": "react-native run-android && (npm run adb || true) && npm run log-android",
     "ios": "react-native run-ios",
